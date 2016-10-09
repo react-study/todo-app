@@ -6,7 +6,7 @@ var path = require('path');
 var config = require('./webpack.config.dev.js');
 
 var PORT = process.env.DEV_PORT || 8080;
-var URL = process.env.DEV_URL || 'http://localhost:8080/';
+var URL = process.env.DEV_URL;
 var compiler = webpack(config);
 
 var serverOptions = {
