@@ -1,9 +1,24 @@
-import React, { PropTypes } from 'react'
+import React, { Component } from 'react'
 
-class Child extends React.Component {
+export default class Child extends Component {
+
     render () {
-        return <div>Hello!!<br/>HiHI</div>;
+        const {
+              name
+            , phone
+            , show
+            , handleClick
+        } = this.props;
+
+        return(
+            <li onClick = {handleClick}>
+                <p>name : {name}</p>
+                <p style={{
+                        display : show ? 'inline' : 'none'
+                    }}>
+                    {phone}
+                </p>
+            </li>
+        );
     }
 }
-
-export default Child;
