@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
-import Child from './Child'
-render(
-    <Child />
-    , document.getElementById('root')
+import ReactDOM from 'react-dom';
+import Parent from './Parent'
+ReactDOM.render(
+    (<Parent />),
+    document.getElementById('root')
 );
