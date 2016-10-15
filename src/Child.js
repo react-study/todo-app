@@ -11,14 +11,10 @@ export default class Child extends Component {
         } = this.props;
 
         return(
-            <li onClick = {handleClick}>
-                <p>name : {name}</p>
-                <p style={{
-                        display : show ? 'inline' : 'none'
-                    }}>
-                    {phone}
-                </p>
-            </li>
+			<li>
+
+            {name} : {phone} / {show + ''}
+			</li>
         );
     }
 }
