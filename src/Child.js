@@ -1,10 +1,32 @@
-import React, { PropTypes } from 'react'
+import React, { Component } from 'react';
 
-class Child extends React.Component {
-    render () {
-        return <div>Hello!!<br/>HiHI</div>;
+export default class Child extends Component {
+    constructor() {
+        super();
+
+        this.state = {
+            isToggle: false
+        };
+
+        //this.handleClick = this.handleClick.bind(this);
     }
-}
 
+    handleClick() {
+        this.setState({
+            isToggle: !this.state.isToggle
+        });
+    }
 
-export default Child;
+    render() {
+        const { name, phone, show , handleClick } = this.props;
+
+        return (
+            <li onClick={handleClick} style={{cursor: 'pointer'}}>
+                <p>name: {name}</p>
+                <p style={{display: show ? 'inline' : 'none'}}>
+                    {phone}
+                </p>
+            </li>
+        );
+    }
+};
