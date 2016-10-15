@@ -1,8 +1,18 @@
-import React, { PropTypes } from 'react'
+import React, { Component } from 'react'
 
-class Child extends React.Component {
+class Child extends Component {
     render () {
-        return <div>Hello!!<br/>gomugom</div>;
+        const {
+            name,
+            phone,
+            show
+        } = this.props;
+
+        return (
+            <li>
+                {name} : {phone} / {show + ''}
+            </li>
+        )
     }
 }
 
