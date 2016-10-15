@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Child from './Child'
+import ComponentTest from './ComponentTest'
 render(
-    <Child />
+    <ComponentTest />
     , document.getElementById('root')
 );
