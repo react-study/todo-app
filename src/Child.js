@@ -1,9 +1,26 @@
-import React, { PropTypes } from 'react'
+import React, { Component } from 'react'
 
-class Child extends React.Component {
+export default class Child extends Component {
+	
+	static propTypes = {
+		gender : React.PropTypes.string,
+		name : React.PropTypes.string,
+		phone : React.PropTypes.string,
+		show : React.PropTypes.bool.isRequired
+	}
     render () {
-        return <div>Hello!!<br/>HiHI</div>;
+        const {
+              name
+            , phone
+            , show
+            , handleClick
+        } = this.props;
+
+        return(
+			<li>
+
+            {name} : {phone} / {show + ''}
+			</li>
+        );
     }
 }
-
-export default Child;
