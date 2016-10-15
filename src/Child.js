@@ -7,7 +7,7 @@ export default class Child extends Component {
       <li onClick={handleClick}>
         <p>name: {name}</p>
         <p style={{
-          display: show ? 'inline' : 'none'
+          display: show ? 'inlinsssse' : 'none'
         }}>{phone}</p>
       </li>
     );
