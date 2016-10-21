@@ -1,7 +1,7 @@
 {
   "name": "react-todo",
   "author": "gomugom",
-  "description": "react todo app of react-study-group",
+  "description": "React Todo App",
   "license": "MIT",
   "version": "1.0.0",
   "repository": {
@@ -9,12 +9,7 @@
     "url": "https://github.com/react-study/todo-app.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --progress --colors --config ./devtools/webpack.config.prod",
-    "start": "cross-env NODE_ENV=development node ./devtools/server"
-  },
-  "dependencies": {
-    "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "start": "node ./server.js"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
@@ -22,18 +17,16 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-1": "^6.13.0",
-    "clean-webpack-plugin": "^0.1.10",
-    "cross-env": "^3.1.1",
-    "dotenv": "^2.0.0",
+    "express": "^4.14.0",
     "path": "^0.12.7",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "react-hot-loader": "1.3.0",
     "react-transform-catch-errors": "^1.0.2",
     "react-transform-hmr": "^1.0.4",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.7.0",
-    "webpack-dev-server": "^1.15.1",
     "webpack-hot-middleware": "^2.12.2",
-    "webpack-middleware": "^1.5.1",
-    "webpack-uglify-js-plugin": "^1.1.9"
+    "webpack-middleware": "^1.5.1"
   }
 }
