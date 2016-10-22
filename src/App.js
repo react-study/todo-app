@@ -14,7 +14,8 @@ class App extends Component {
                 {id: 1001, text: '삼겹살에 소주 한 잔'},
                 {id: 1002, text: '리코타샐러드에 봉골레 파스타'},
                 {id: 1003, text: '떡순튀'}
-            ]
+            ],
+            editing: null
         };
     }
     handleAddTodo(text) {
@@ -25,22 +26,46 @@ class App extends Component {
             }]
         });
     }
-    handleDeleteTodo(todo) {
+    handleDeleteTodo(id) {
         const newTodos = [...this.state.todos];
-        const deleteIndex = newTodos.findIndex(v => v.id === todo.id);
+        const deleteIndex = newTodos.findIndex(v => v.id === id);
         newTodos.splice(deleteIndex, 1);
         this.setState({ todos: newTodos });
     }
+    handleEditTodo(id) {
+        this.setState({
+            editing: id
+        });
+    }
+    handleSaveTodo(id, newText) {
+        const newTodos = [...this.state.todos];
+        const editIndex = newTodos.findIndex(v => v.id === id);
+        newTodos[editIndex].text = newText;
+        this.setState({
+            todos: newTodos,
+            editing: null
+        });
+    }
+    handleCancelEditTodo() {
+        this.setState({
+            editing: null
+        });
+    }
     render() {
         const {
-            todos
+            todos,
+            editing
         } = this.state;
         return (
             <div className="todo-app">
-                <Header handleAddTodo={(text)=> this.handleAddTodo(text)} />
+                <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
                 <TodoList
                     todos={todos}
-                    handleDeleteTodo={(todo)=> this.handleDeleteTodo(todo)}
+                    editing={editing}
+                    handleEditTodo = {id=> this.handleEditTodo(id)}
+                    handleSaveTodo = {(id, newText)=> this.handleSaveTodo(id, newText)}
+                    handleCancelEditTodo = {()=> this.handleCancelEditTodo()}
+                    handleDeleteTodo = {id=> this.handleDeleteTodo(id)}
                 />
                 <Footer />
             </div>
