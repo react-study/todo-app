@@ -20,13 +20,20 @@ class Todo extends Component {
             onEditTodo,
             onSaveTodo,
             onCancelEditTodo,
-            onDeleteTodo
+            onDeleteTodo,
+            onToggleTodo
         } = this.props;
         return (
             <li className={`todo-item${editing ? ' editing' : ''}${done ? ' completed' : ''}`}>
-                <div className="toggle" />
+                <div
+                    className="toggle"
+                    onClick={onToggleTodo}
+                />
                 <div className="todo-item__view">
-                    <div className="todo-item__view__text" onDoubleClick={onEditTodo}>
+                    <div
+                        className="todo-item__view__text"
+                        onDoubleClick={onEditTodo}
+                    >
                         {text}
                     </div>
                     <button

@@ -51,6 +51,25 @@ class App extends Component {
             editing: null
         });
     }
+    handleToggleAll() {
+        const newToggleAll = !this.state.todos.every(v => v.done);
+        const newTodos = this.state.todos.map(v => {
+            v.done = newToggleAll;
+            return v;
+        });
+        this.setState({
+            todos: newTodos
+        });
+    }
+    handleToggleTodo(id) {
+        const newTodos = [...this.state.todos];
+        const editIndex = newTodos.findIndex(v => v.id === id);
+        newTodos[editIndex].done = !newTodos[editIndex].done;
+        this.setState({
+            todos: newTodos
+        });
+    }
+
     render() {
         const {
             todos,
@@ -66,6 +85,8 @@ class App extends Component {
                     handleSaveTodo = {(id, newText)=> this.handleSaveTodo(id, newText)}
                     handleCancelEditTodo = {()=> this.handleCancelEditTodo()}
                     handleDeleteTodo = {id=> this.handleDeleteTodo(id)}
+                    handleToggleAll={()=> this.handleToggleAll()}
+                    handleToggleTodo={id=> this.handleToggleTodo(id)}
                 />
                 <Footer />
             </div>
