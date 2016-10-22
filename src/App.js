@@ -15,8 +15,16 @@ class App extends Component {
                 {id: 1002, text: '리코타샐러드에 봉골레 파스타'},
                 {id: 1003, text: '떡순튀'}
             ],
-            editing: null
+            editing: null,
+            filter: 'All'
         };
+    }
+    handleSelectFilter(filter) {
+        this.setState({ filter });
+    }
+    handleDeleteCompleted() {
+        const newTodos = this.state.todos.filter(v=> !v.done);
+        this.setState({ todos: newTodos });
     }
     handleAddTodo(text) {
         this.setState({
@@ -73,14 +81,18 @@ class App extends Component {
     render() {
         const {
             todos,
-            editing
+            editing,
+            filter
         } = this.state;
+        const activeLength = todos.filter(v=> !v.done).length;
+        const completedLength = todos.length - activeLength;
         return (
             <div className="todo-app">
                 <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
                 <TodoList
                     todos={todos}
                     editing={editing}
+                    filter={filter}
                     handleEditTodo = {id=> this.handleEditTodo(id)}
                     handleSaveTodo = {(id, newText)=> this.handleSaveTodo(id, newText)}
                     handleCancelEditTodo = {()=> this.handleCancelEditTodo()}
@@ -88,7 +100,13 @@ class App extends Component {
                     handleToggleAll={()=> this.handleToggleAll()}
                     handleToggleTodo={id=> this.handleToggleTodo(id)}
                 />
-                <Footer />
+                <Footer
+                    filter = {filter}
+                    activeLength = {activeLength}
+                    completedLength = {completedLength}
+                    handleSelectFilter = {filter=> this.handleSelectFilter(filter)}
+                    handleDeleteCompleted = {()=> this.handleDeleteCompleted()}
+                />
             </div>
         );
     }
