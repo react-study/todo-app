@@ -5,13 +5,17 @@ class Todo extends Component {
         const {
             text,
             done,
-            id
+            id,
+            editing
         } = this.props;
         return (
-            <li className="todo-item">
+            <li className={"todo-item"}>
                 <div className="toggle"/>
                 <div className="todo-item__view">
-                    <div className="todo-item__view__text">
+                    <div 
+                        className="todo-item__view__text"
+                        onDoubleClick={this.editTodo}
+                    >
                         {text}
                     </div>
                     <button 
@@ -19,7 +23,10 @@ class Todo extends Component {
                         onClick={()=> this.props.deleteTodo(id)}
                     />
                 </div>
-                <input className="todo-item__edit" type="text" />
+                <input 
+                    className="todo-item__edit" type="text" 
+                    onKeyDown={this.props.saveTodo}
+                />
             </li>
         );
     }

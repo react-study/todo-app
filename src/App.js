@@ -28,6 +28,8 @@ class App extends Component {
         newTodos.splice(targetIndex, 1);
         this.setState({todos: newTodos});
     }
+    
+    
     render (){
         return (
             <div className="todo-app">
