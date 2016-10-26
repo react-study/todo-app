@@ -1,9 +1,9 @@
 var path = require('path');
 var webpack = require('webpack');
 
-var HOST = 'http://localhost';
-var PORT = 8080;
-var URL = HOST + ':' + PORT + '/';
+var HOST  = 'http://localhost';
+var PORT  = 8080;
+var URL   = HOST + ':' + PORT + '/';
 var _PATH = path.resolve(__dirname, 'src');
 
 module.exports = {
@@ -30,17 +30,17 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        include: [_PATH],
-        exclude: [/node_modules/],
+        include: [ _PATH ],
+        exclude: [ /node_modules/ ],
         loader: 'react-hot!babel?cacheDirectory'
       }
     ]
   },
   resolve: {
-    root: [_PATH],
-    extensions: ['', '.js']
+    root: [ _PATH ],
+    extensions: [ '', '.js' ]
   },
-  node: {fs: "empty"},
+  node: { fs: "empty" },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
