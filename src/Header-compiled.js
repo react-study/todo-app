@@ -24,16 +24,15 @@ var Header = function (_Component) {
     function Header() {
         _classCallCheck(this, Header);
 
-        return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this));
     }
 
     _createClass(Header, [{
         key: 'handleKeyDown',
         value: function handleKeyDown(e) {
-            var val = e.target.value;
+            var val = this._input.value;
             if (!val || e.keyCode !== 13) return;
-
-            this.props.addTodo(val);
+            this.props.handleAddTodo(val);
             this._input.value = '';
         }
     }, {
@@ -51,7 +50,7 @@ var Header = function (_Component) {
                 ),
                 _react2.default.createElement('input', {
                     className: 'todo-app__new-todo',
-                    placeholder: 'what needs to be doen?',
+                    placeholder: 'what needs to be done?',
                     onKeyDown: function onKeyDown(e) {
                         return _this2.handleKeyDown(e);
                     },
