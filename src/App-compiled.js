@@ -18,6 +18,10 @@ var _TodoList = require('./TodoList');
 
 var _TodoList2 = _interopRequireDefault(_TodoList);
 
+var _Footer = require('./Footer');
+
+var _Footer2 = _interopRequireDefault(_Footer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -28,7 +32,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var getUniqueId = function getUniqueId() {
+var generateUId = function generateUId() {
     return Date.now();
 };
 
@@ -41,25 +45,29 @@ var App = function (_Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
         _this.state = {
-            todos: [{ id: 1000, text: 'hacosa' }, { id: 1001, text: '어중이' }, { id: 1002, text: '떠중이' }]
+            todos: [{ id: 1000, text: '치킨에 맥주 한 잔' }, { id: 1001, text: '삼겹살에 소주 한 잔' }, { id: 1002, text: '리코타샐러드에 봉골레 파스타' }, { id: 1003, text: '떡순튀' }]
         };
         return _this;
     }
 
     _createClass(App, [{
-        key: 'addTodo',
-        value: function addTodo(newTodo) {
-            var newTodos = [].concat(_toConsumableArray(this.state.todos), [{ id: getUniqueId(), text: newTodo }]);
-            this.setState({ todos: newTodos });
+        key: 'handleAddTodo',
+        value: function handleAddTodo(text) {
+            this.setState({
+                todos: [].concat(_toConsumableArray(this.state.todos), [{
+                    id: generateUId(),
+                    text: text
+                }])
+            });
         }
     }, {
-        key: 'deleteTodo',
-        value: function deleteTodo(id) {
+        key: 'handleDeleteTodo',
+        value: function handleDeleteTodo(todo) {
             var newTodos = [].concat(_toConsumableArray(this.state.todos));
-            var targetIndex = newTodos.findIndex(function (v) {
-                return v.id === id;
+            var deleteIndex = newTodos.findIndex(function (v) {
+                return v.id === todo.id;
             });
-            newTodos.splice(targetIndex, 1);
+            newTodos.splice(deleteIndex, 1);
             this.setState({ todos: newTodos });
         }
     }, {
@@ -67,18 +75,18 @@ var App = function (_Component) {
         value: function render() {
             var _this2 = this;
 
+            var todos = this.state.todos;
+
             return _react2.default.createElement(
                 'div',
                 { className: 'todo-app' },
-                _react2.default.createElement(_Header2.default, {
-                    addTodo: function addTodo(newTodo) {
-                        return _this2.addTodo(newTodo);
-                    }
-                }),
+                _react2.default.createElement(_Header2.default, { handleAddTodo: function handleAddTodo(text) {
+                        return _this2.handleAddTodo(text);
+                    } }),
                 _react2.default.createElement(_TodoList2.default, {
-                    todos: this.state.todos,
-                    deleteTodo: function deleteTodo(id) {
-                        return _this2.deleteTodo(id);
+                    todos: todos,
+                    handleDeleteTodo: function handleDeleteTodo(todo) {
+                        return _this2.handleDeleteTodo(todo);
                     }
                 })
             );

@@ -12,7 +12,7 @@ module.exports = {
     URL: URL,
     watch: true,
     progress: true,
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'cheap-eval-source-map',
     context: _PATH,
     entry: {
         index: [
