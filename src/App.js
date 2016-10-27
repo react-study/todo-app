@@ -14,7 +14,8 @@ class App extends Component {
                 {id: 1001, text: '봄날은'},
                 {id: 1002, text: '간다'},
                 {id: 1003, text: '바람처럼'}
-            ]
+            ],
+            editing: null
         };
     }
     handleAddTodo(text) {
@@ -25,22 +26,67 @@ class App extends Component {
             }]
         });
     }
-    handleDeleteTodo(todo) {
+    handleDeleteTodo(id) {
         const newTodos = [...this.state.todos];
-        const deleteIndex = newTodos.findIndex(v => v.id === todo.id);
+        const deleteIndex = newTodos.findIndex(v => v.id === id);
         newTodos.splice(deleteIndex, 1);
         this.setState({ todos: newTodos });
     }
+    handleEditTodo(id) {
+        this.setState({
+            editing: id
+        });
+    }
+    handleSaveTodo(id, newText) {
+        const newTodos = [...this.state.todos];
+        const editIndex = newTodos.findIndex(v => v.id === id);
+        newTodos[editIndex].text = newText;
+        this.setState({
+            todos: newTodos,
+            editing: null
+        });
+    }
+    handleCancelEditTodo() {
+        this.setState({
+            editing: null
+        });
+    }
+    handleToggleAll(){
+        const newToggleAll = !this.state.todos.every(v => v.done);
+        const newTodos = this.state.todos.map( v => {
+            v.done = newToggleAll;
+            return v;
+        });
+        this.setState({
+            todos : newTodos
+        });
+    }
+    handleToggleTodo(id){
+        const newTodos = [...this.state.todos];
+        const editIndex = newTodos.findIndex(v => v.id === id);
+        newTodos[editIndex].done = !newTodos[editIndex].done;
+        this.setState({
+            todos : newTodos
+        });
+    }
+    
     render() {
         const {
-            todos
-        } = this.state;
+            todos,
+            editing
+        } = this.state
         return (
             <div className="todo-app">
-                <Header handleAddTodo={(text)=> this.handleAddTodo(text)} />
+                <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
                 <TodoList
                     todos={todos}
-                    handleDeleteTodo={(todo)=> this.handleDeleteTodo(todo)}
+                    editing={editing}
+                    handleEditTodo = {id=> this.handleEditTodo(id)}
+                    handleSaveTodo = {(id, newText)=> this.handleSaveTodo(id, newText)}
+                    handleCancelEditTodo = {()=> this.handleCancelEditTodo()}
+                    handleDeleteTodo = {id=> this.handleDeleteTodo(id)}
+                    handleToggleAll = {() => this.handleToggleAll()}
+                    handleToggleTodo = { id => this.handleToggleTodo(id)}
                 />
                 <Footer />
             </div>
