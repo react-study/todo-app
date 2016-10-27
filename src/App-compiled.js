@@ -45,7 +45,8 @@ var App = function (_Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
         _this.state = {
-            todos: [{ id: 1000, text: 'hacosa' }, { id: 1001, text: '어중이' }, { id: 1002, text: '떠중이' }]
+            todos: [{ id: 1000, text: '치킨에 맥주 한 잔' }, { id: 1001, text: '삼겹살에 소주 한 잔' }, { id: 1002, text: '리코타샐러드에 봉골레 파스타' }, { id: 1003, text: '떡순튀' }],
+            editing: null
         };
         return _this;
     }
@@ -71,11 +72,40 @@ var App = function (_Component) {
             this.setState({ todos: newTodos });
         }
     }, {
+        key: 'handleEditTodo',
+        value: function handleEditTodo(id) {
+            this.setState({
+                editing: id
+            });
+        }
+    }, {
+        key: 'handleSaveTodo',
+        value: function handleSaveTodo(id, newText) {
+            var newTodos = [].concat(_toConsumableArray(this.state.todos));
+            var editIndex = newTodos.findIndex(function (v) {
+                return v.id === id;
+            });
+            newTodos[editIndex].text = newText;
+            this.setState({
+                todos: newTodos,
+                editing: null
+            });
+        }
+    }, {
+        key: 'handleCancelEditTodo',
+        value: function handleCancelEditTodo() {
+            this.setState({
+                editing: null
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
 
-            var todos = this.state.todos;
+            var _state = this.state,
+                todos = _state.todos,
+                editing = _state.editing;
 
             return _react2.default.createElement(
                 'div',
@@ -85,8 +115,18 @@ var App = function (_Component) {
                     } }),
                 _react2.default.createElement(_TodoList2.default, {
                     todos: todos,
-                    handleDeleteTodo: function handleDeleteTodo(todo) {
-                        return _this2.handleDeleteTodo(todo);
+                    editing: editing,
+                    handleEditTodo: function handleEditTodo(id) {
+                        return _this2.handleEditTodo(id);
+                    },
+                    handleSaveTodo: function handleSaveTodo(id, newText) {
+                        return _this2.handleSaveTodo(id, newText);
+                    },
+                    handleCancelEditTodo: function handleCancelEditTodo() {
+                        return _this2.handleCancelEditTodo();
+                    },
+                    handleDeleteTodo: function handleDeleteTodo(id) {
+                        return _this2.handleDeleteTodo(id);
                     }
                 })
             );
