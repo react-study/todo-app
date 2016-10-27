@@ -99,6 +99,32 @@ var App = function (_Component) {
             });
         }
     }, {
+        key: 'handleToggleAll',
+        value: function handleToggleAll() {
+            var newToggleAll = !this.state.todos.every(function (v) {
+                return v.done;
+            });
+            var newTodos = this.state.todos.map(function (v) {
+                v.done = newToggleAll;
+                return v;
+            });
+            this.setState({
+                todos: newTodos
+            });
+        }
+    }, {
+        key: 'handleToggleTodo',
+        value: function handleToggleTodo(id) {
+            var newTodos = [].concat(_toConsumableArray(this.state.todos));
+            var editIndex = newTodos.findIndex(function (v) {
+                return v.id === id;
+            });
+            newTodos[editIndex].done = !newTodos[editIndex].done;
+            this.setState({
+                todos: newTodos
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
@@ -127,6 +153,12 @@ var App = function (_Component) {
                     },
                     handleDeleteTodo: function handleDeleteTodo(id) {
                         return _this2.handleDeleteTodo(id);
+                    },
+                    handleToggleAll: function handleToggleAll() {
+                        return _this2.handleToggleAll();
+                    },
+                    handleToggleTodo: function handleToggleTodo(id) {
+                        return _this2.handleToggleTodo(id);
                     }
                 })
             );

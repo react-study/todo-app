@@ -58,12 +58,16 @@ var Todo = function (_Component) {
                 onEditTodo = _props.onEditTodo,
                 onSaveTodo = _props.onSaveTodo,
                 onCancelEditTodo = _props.onCancelEditTodo,
-                onDeleteTodo = _props.onDeleteTodo;
+                onDeleteTodo = _props.onDeleteTodo,
+                onToggleTodo = _props.onToggleTodo;
 
             return _react2.default.createElement(
                 'li',
                 { className: 'todo-item' + (editing ? ' editing' : '') + (done ? ' completed' : '') },
-                _react2.default.createElement('div', { className: 'toggle' }),
+                _react2.default.createElement('div', {
+                    className: 'toggle',
+                    onClick: onToggleTodo
+                }),
                 _react2.default.createElement(
                     'div',
                     { className: 'todo-item__view' },
