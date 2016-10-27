@@ -1,17 +1,28 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Header extends Component {
-    render(){
-        return (
-            <header>
-                <h1 className = "todo-app__header">todos</h1>
-                <input 
-                    className = "todo-app__new-todo"
-                    placeholder = "what needs to be done>"
-                />
-            </header>
-        );
-    }
-}
+const tempLength = 4;
 
-export default Header;
+const Footer = () => (
+    <div className="footer">
+        <span className="todo-count">
+            <strong>{tempLength}</strong>{' '}
+            <span>{tempLength > 1 ? 'items' : 'item'}</span>
+            {' '}left
+        </span>
+        <ul className="todo-filters">
+            <li>
+                <a>All</a>
+            </li>
+            <li>
+                <a>Active</a>
+            </li>
+            <li>
+                <a>Completed</a>
+            </li>
+        </ul>
+        <button className="todo-delete-completed">
+            Delete Completed
+        </button>
+    </div>
+);
+export default Footer;

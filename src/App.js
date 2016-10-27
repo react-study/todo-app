@@ -1,42 +1,49 @@
 import React, { Component } from 'react';
-import Header from './Header.js';
-import TodoList from './TodoList.js';
-//import footer from './footer.js';
+import Header from './Header';
+import TodoList from './TodoList';
+import Footer from './Footer';
 
-const getUniqueId = ()=> Date.now();
+const generateUId = ()=> Date.now();
 
 class App extends Component {
-    constructor (){
+    constructor() {
         super();
         this.state = {
-            todos:[
-                { text: '치킨에 맺주한잔', id: 1000},
-                { text: '삼겹살에 쏘주', id: 1001},
-                { text: '떡순튀', id: 1002}
+            todos: [
+                {id: 1000, text: '내 생에'},
+                {id: 1001, text: '봄날은'},
+                {id: 1002, text: '간다'},
+                {id: 1003, text: '바람처럼'}
             ]
-        }
+        };
     }
-    
-    addTodo(newTodo){
-        const newTodos = [...this.state.todos, { id: getUniqueId(), text: newTodo}];
-        this.setState({todos: newTodos});
+    handleAddTodo(text) {
+        this.setState({
+            todos: [ ...this.state.todos, {
+                id: generateUId(),
+                text
+            }]
+        });
     }
-    
-    deleteTodo(id){
+    handleDeleteTodo(todo) {
         const newTodos = [...this.state.todos];
-        const targetIndex = newTodos.findIndex(v => v.id === id);
-        newTodos.splice(targetIndex, 1);
-        this.setState({todos: newTodos});
+        const deleteIndex = newTodos.findIndex(v => v.id === todo.id);
+        newTodos.splice(deleteIndex, 1);
+        this.setState({ todos: newTodos });
     }
-    render (){
+    render() {
+        const {
+            todos
+        } = this.state;
         return (
             <div className="todo-app">
-                <Header addTodo={newTodo=> this.addTodo(newTodo)} />
-                <TodoList 
-                    todos={this.state.todos} 
-                    deleteTodo={(id) => this.deleteTodo(id)}
+                <Header handleAddTodo={(text)=> this.handleAddTodo(text)} />
+                <TodoList
+                    todos={todos}
+                    handleDeleteTodo={(todo)=> this.handleDeleteTodo(todo)}
                 />
-            </div>    
+                <Footer />
+            </div>
         );
     }
 }
