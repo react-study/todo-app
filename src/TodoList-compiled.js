@@ -16,6 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var TodoList = function TodoList(_ref) {
     var todos = _ref.todos,
+        filter = _ref.filter,
         editing = _ref.editing,
         handleEditTodo = _ref.handleEditTodo,
         handleSaveTodo = _ref.handleSaveTodo,
@@ -28,6 +29,9 @@ var TodoList = function TodoList(_ref) {
         var id = _ref2.id,
             text = _ref2.text,
             done = _ref2.done;
+
+        if (done && filter === 'Active' || !done && filter === 'Completed') return;
+
         return _react2.default.createElement(_Todo2.default, {
             key: id,
             text: text,

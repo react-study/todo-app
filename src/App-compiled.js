@@ -46,12 +46,18 @@ var App = function (_Component) {
 
         _this.state = {
             todos: [{ id: 1000, text: '치킨에 맥주 한 잔' }, { id: 1001, text: '삼겹살에 소주 한 잔' }, { id: 1002, text: '리코타샐러드에 봉골레 파스타' }, { id: 1003, text: '떡순튀' }],
-            editing: null
+            editing: null,
+            filter: 'All'
         };
         return _this;
     }
 
     _createClass(App, [{
+        key: 'handleSelectFilter',
+        value: function handleSelectFilter(filter) {
+            this.setState({ filter: filter });
+        }
+    }, {
         key: 'handleAddTodo',
         value: function handleAddTodo(text) {
             this.setState({
@@ -131,8 +137,13 @@ var App = function (_Component) {
 
             var _state = this.state,
                 todos = _state.todos,
-                editing = _state.editing;
+                editing = _state.editing,
+                filter = _state.filter;
 
+            var activeLength = todos.filter(function (v) {
+                return !v.done;
+            }).length;
+            var completedLength = todos.length - activeLength;
             return _react2.default.createElement(
                 'div',
                 { className: 'todo-app' },
@@ -142,6 +153,7 @@ var App = function (_Component) {
                 _react2.default.createElement(_TodoList2.default, {
                     todos: todos,
                     editing: editing,
+                    filter: filter,
                     handleEditTodo: function handleEditTodo(id) {
                         return _this2.handleEditTodo(id);
                     },
@@ -159,6 +171,16 @@ var App = function (_Component) {
                     },
                     handleToggleTodo: function handleToggleTodo(id) {
                         return _this2.handleToggleTodo(id);
+                    }
+                }),
+                _react2.default.createElement(_Footer2.default, {
+                    filter: filter,
+                    activeLength: completedLength,
+                    handleSelectFilter: function handleSelectFilter(filter) {
+                        return _this2.handleSelectFilter(filter);
+                    },
+                    handleDeleteCompleted: function handleDeleteCompleted() {
+                        return _this2.handleDeleteCompleted();
                     }
                 })
             );
