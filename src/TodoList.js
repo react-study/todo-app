@@ -7,7 +7,9 @@ const TodoList = ({
 	handleEditTodo,
 	handleSaveTodo,
 	handleCancelEditTodo,
-	handleDeleteTodo
+	handleDeleteTodo,
+    handleToggleAll,
+    handleToggleTodo
 })=> {
 	const todoList = todos.map( ({id, text, done},i) =>(
 		<Todo 
@@ -15,20 +17,23 @@ const TodoList = ({
 				text={text} 
 				done={done} 
 				 editing = {editing === id}
+				
+				onEditTodo = {() =>handleEditTodo(id)} 
+				onSaveTodo = {text=>handleSaveTodo(id, text)}
+				onCancelEditTodo = {()=>handleCancelEditTodo()}
 				onDeleteTodo = {()=>handleDeleteTodo(id)} 
-				onEditTodo  = {() =>handleEditTodo(id)} 
-				onSaveTodo       = {text=>handleSaveTodo(id, text)}
-				onCancelEditTodo = {()=>handleDeleteTodo()}
+				onToggleTodo = {()=> handleToggleTodo(id)}
 			/>
 	));
 	return(
-		<div className ="todo-app__main">
-			<div className="toggle-all" />
-			<ul className="todo-list">
-				{todoList}
-			</ul>
-
-		</div>
+		  <div className="todo-app__main">
+            <div className={`toggle-all${todos.every(v=> v.done) ? ' checked' : ''}`}
+                onClick={handleToggleAll}
+            />
+            <ul className="todo-list">
+                {todoList}
+            </ul>
+        </div>
 		);
 }
 
