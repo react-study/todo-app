@@ -3,8 +3,9 @@ import { render } from 'react-dom';
 import Parent from './Parent';
 import Child from './Child'
 import LifeCycleParent from './LifeCycleParent';
+import App from './App';
 
 render(
-    <LifeCycleParent />
+    <App />
     , document.getElementById('root')
 );

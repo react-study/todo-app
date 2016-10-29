@@ -6,6 +6,8 @@ var webpack = require('webpack');
 var DEV_URL = process.env.DEV_URL;
 var DEV_PATH   = path.resolve(__dirname, '../src');
 
+console.log(DEV_URL, ' : DEV_URL');
+
 module.exports = {
     watch: true,
     progress: true,

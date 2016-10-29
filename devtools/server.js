@@ -9,6 +9,8 @@ var PORT = process.env.DEV_PORT || 8080;
 var URL = process.env.DEV_URL || 'http://localhost:8080/';
 var compiler = webpack(config);
 
+console.log(config.output.publicPath, ' : public path');
+
 var serverOptions = {
     contentBase: URL,
     progress: true,
@@ -35,6 +37,9 @@ var app = new express();
 app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
 app.use(express.static(config.context));
+
+
+console.log(config.context);
 
 app.listen(PORT, function onAppListening(err) {
     if (err) {

@@ -32,7 +32,7 @@ export default class LifeCycleParent extends Component {
     render() {
         if(!this.state.list.length) {
             return (
-                <button onClick={() => this.addChild()}>자식추가</button>
+                <button onClick={() => this.addChild()}>자식추가1</button>
             );
         }
 
