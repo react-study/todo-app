@@ -23,8 +23,11 @@ export default class App extends Component {
         {id: getUniqueId(), text: 'PC방 가기'},
         {id: getUniqueId() + 1, text: '자전거 타기'},
         {id: getUniqueId() + 2, text: '피자 먹기'}
-      ]
+      ],
+      editId: null
     };
+    // window 객체에서 this를 제대로 바인딩하지 못해서 여기에서 바인딩 해줌.
+    this.cancelEditTodo = this.cancelEditTodo.bind(this);
   }
 
   // Array.splice() 대신에 [...Array]로 얕은 복사가 가능.
@@ -54,26 +57,42 @@ export default class App extends Component {
     this.setState({todos: newTodos});
   }
 
+  editTodo(id) {
+    this.setState({editId: id});
+  }
+
+  cancelEditTodo() {
+    this.setState({editId: null});
+  }
+
   // 자식 컴포넌트로부터 id와 수정된 텍스트를 가지고 있는 객체를 매개변수로 받음.
-  saveTodo(editTodo) {
+  saveTodo(text) {
     const newTodos = [...this.state.todos];
-    const idx = newTodos.findIndex(v => v.id === editTodo.id);
+    const idx = newTodos.findIndex(v => v.id === this.state.editId);
     // 자식 컴포넌트와 일치하는 id를 찾아서 수정된 텍스트로 스테이트 대체.
-    newTodos[idx].text = editTodo.text;
-    this.setState({todos: newTodos});
+    newTodos[idx].text = text;
+    this.setState({todos: newTodos, editId: null});
+  }
+
+  componentDidMount() {
+    window.addEventListener('click', this.cancelEditTodo);
   }
 
   render() {
     return (
-      <div className="todo-app">
+      <div className="todo-app"
+           onClick={() => this.cancelEditTodo()}>
         {/*
          props로 메소드를 내려줄 때는 함수 호출문처럼 내려줘야 함.
          리액트가 this 바인딩을 제대로 못해서 아래와 같이 써줘야 함.
          */}
         <Header addTodo={newTodo => this.addTodo(newTodo)} />
         <TodoList todos={this.state.todos}
+                  editId={this.state.editId}
                   deleteTodo={id => this.deleteTodo(id)}
-                  saveTodo={editTodo => this.saveTodo(editTodo)} />
+                  editTodo={id => this.editTodo(id)}
+                  cancelEditTodo={this.cancelEditTodo}
+                  saveTodo={text => this.saveTodo(text)} />
         {/*<Footer />*/}
       </div>
     );

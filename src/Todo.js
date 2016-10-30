@@ -1,43 +1,39 @@
 import React, {Component} from 'react';
+import ClassNames from 'classnames';
 
 export default class Todo extends Component {
-  editTodo() { // 수정 모드 돌입.
-    this.todo.className += ' editing';
-    this.editField.focus();
+  componentDidUpdate() {
+    if(this.props.isEdited) this.editField.focus();
   }
 
-  cancelEditTodo() { // 수정 취소.
-    this.todo.className = this.todo.className.split(' ')[0];
+  handleFocus() {
     this.editField.value = this.props.text;
+  }
+
+  handleClick(e) {
+    e.stopPropagation();
   }
 
   handleKeyDown(e) {
     const text = this.editField.value;
-    const id = this.props.id;
 
     // 내용을 다 지우고 엔터를 누르면 수정이 취소.
-    if(!text && e.keyCode === 13) return this.cancelEditTodo();
+    if(!text && e.keyCode === 13) return this.props.cancelEditTodo();
 
     // 내용이 있는 상태에서 엔터 이외의 키를 누르면 함수 종료.
     else if(e.keyCode !== 13) return;
 
-    this.props.saveTodo({id, text});
-
-    // blur 시켜버리면 수정 취소가 되어 오동작을 하게 됨.
-    this.todo.className = this.todo.className.split(' ')[0];
+    this.props.saveTodo(text);
   }
 
   render() {
-    const {text, id} = this.props;
+    const {isEdited, text, id, editTodo} = this.props;
     return (
-      <li className="todo-item"
-          ref={ref => {
-            this.todo = ref
-          }}>
+      <li className={ClassNames('todo-item', {editing: isEdited})}>
         <div className="todo-item__view">
           <div className="toggle" />
           <div className="todo-item__view__text"
-               onDoubleClick={() => this.editTodo()}>
+               onDoubleClick={() => editTodo(id)}>
             {text}
           </div>
           {/*
@@ -48,11 +44,11 @@ export default class Todo extends Component {
         </div>
         <input type="text"
                className="todo-item__edit"
-               defaultValue={text}
                ref={ref => {
                  this.editField = ref;
                }}
-               onBlur={() => this.cancelEditTodo()}
+               onFocus={() => this.handleFocus()}
+               onClick={e => this.handleClick(e)}
                onKeyDown={e => this.handleKeyDown(e)} />
       </li>
     );
