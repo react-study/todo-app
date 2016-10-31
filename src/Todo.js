@@ -17,8 +17,9 @@ export default class Todo extends Component {
     // 아래와 같이 코딩하면 수정 취소를 하고 다시 포커스를 가졌을 때
     // 이전에 수정한 내역을 가지고 있게 됨.
     // this.editField.value = !this.editField.value ? this.props.text : this.editField.value;
+    // 즉 아래가 완전판임.
     this.editField.value = (!this.editField.value || (this.editField.value !== this.props.text)) ?
-                            this.props.text : this.editField.value;
+      this.props.text : this.editField.value;
   }
 
   // 이벤트의 버블링을 방지.
@@ -40,7 +41,7 @@ export default class Todo extends Component {
   }
 
   render() {
-    const {isEdited, text, id, done, editTodo, deleteTodo, toggleTodo} = this.props;
+    const {isEdited, text, idx, done, editTodo, deleteTodo, toggleTodo} = this.props;
     return (
       <li className={ClassNames('todo-item', {
         editing: isEdited,
@@ -48,16 +49,16 @@ export default class Todo extends Component {
       })}>
         <div className="todo-item__view">
           <div className="toggle"
-               onClick={() => toggleTodo(id)} />
+               onClick={() => toggleTodo(idx)} />
           <div className="todo-item__view__text"
-               onDoubleClick={() => editTodo(id)}>
+               onDoubleClick={() => editTodo(idx)}>
             {text}
           </div>
           {/*
            실제 메소드를 호출할 때는 매개변수를 생략하고 씀.
            */}
           <button className="todo-item__destroy"
-                  onClick={()=> deleteTodo(id)} />
+                  onClick={()=> deleteTodo(idx)} />
         </div>
         <input type="text"
                className="todo-item__edit"

@@ -7,6 +7,7 @@ export default class Footer extends Component {
     return (
       <footer className="footer">
         <span className="todo-count">
+          {/* 1이나 0은 복수가 아니라 s를 안 붙여줌. */}
           {activeLength} item{activeLength > 1 ? 's' : ''} left
         </span>
         <ul className="todo-filters">
@@ -23,6 +24,7 @@ export default class Footer extends Component {
                onClick={() => changeFilter('Done')}>Done</a>
           </li>
         </ul>
+        {/* 완료된 todo가 없다면 버튼을 보여줄 필요가 없음. */}
         <button className={ClassNames('todo-delete-completed', {hidden: !doneLength})}
                 onClick={() => deleteDone()}>Delete done
         </button>
