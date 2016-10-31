@@ -116,7 +116,8 @@ export default class App extends Component {
 
   render() {
     const {todos, editId, nowShowing} = this.state;
-    let cntLeftItems = todos.length - todos.filter(v => v.done).length;
+    const completedLength = todos.filter(v => v.done).length;
+    const activeLength = todos.length - completedLength;
     return (
       <div className="todo-app"
            onClick={() => this.cancelEditTodo()}>
@@ -134,7 +135,8 @@ export default class App extends Component {
                   saveTodo={text => this.saveTodo(text)}
                   toggleTodo={id => this.toggleTodo(id)}
                   toggleAll={() => this.toggleAll()} />
-        <Footer cntLeftItems={cntLeftItems}
+        <Footer activeLength={activeLength}
+                completedLength={completedLength}
                 nowShowing={nowShowing}
                 changeShowing={filter => this.changeShowing(filter)}
                 deleteCompleted={() => this.deleteCompleted()} />

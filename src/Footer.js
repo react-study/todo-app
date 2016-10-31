@@ -3,11 +3,11 @@ import ClassNames from 'classnames';
 
 export default class Footer extends Component {
   render() {
-    const {cntLeftItems, nowShowing, changeShowing, deleteCompleted} = this.props;
+    const {activeLength, completedLength, nowShowing, changeShowing, deleteCompleted} = this.props;
     return (
       <footer className="footer">
         <span className="todo-count">
-          {cntLeftItems} item{cntLeftItems > 1 ? 's' : ''} left
+          {activeLength} item{activeLength > 1 ? 's' : ''} left
         </span>
         <ul className="todo-filters">
           <li>
@@ -23,7 +23,7 @@ export default class Footer extends Component {
                onClick={() => changeShowing('Completed')}>Completed</a>
           </li>
         </ul>
-        <button className="clear-completed"
+        <button className={ClassNames('todo-delete-completed', {hidden: !completedLength})}
                 onClick={() => deleteCompleted()}>Clear completed
         </button>
       </footer>
