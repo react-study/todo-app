@@ -4,13 +4,6 @@ import ClassNames from 'classnames';
 export default class Todo extends Component {
   constructor() {
     super();
-    // 에디트 모드인지 아닌지 확인하기 위한 플래그 변수인데
-    // 리액트 Virtual DOM은 setState나 props changed 이벤트가 발생하지 않으면
-    // 렌더링하지 않아서 클래스도 붙지 않는다.
-    // 따라서 일반 변수가 아닌 state로 지정해줌.
-    this.state = {
-      isEdited: false
-    };
     // window 객체에서 this를 제대로 바인딩하지 못해서 여기에서 바인딩 해줌.
     this.cancelEditTodo = this.cancelEditTodo.bind(this);
   }
