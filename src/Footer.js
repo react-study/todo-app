@@ -3,12 +3,11 @@ import ClassNames from 'classnames';
 
 export default class Footer extends Component {
   render() {
-    const {nowShowing, changeShowing, getLeftItems} = this.props;
+    const {cntLeftItems, nowShowing, changeShowing, deleteCompleted} = this.props;
     return (
       <footer className="footer">
         <span className="todo-count">
-          {getLeftItems()}
-          item{getLeftItems() > 1 ? 's' : ''} left
+          {cntLeftItems} item{cntLeftItems > 1 ? 's' : ''} left
         </span>
         <ul className="todo-filters">
           <li>
@@ -24,6 +23,9 @@ export default class Footer extends Component {
                onClick={() => changeShowing('Completed')}>Completed</a>
           </li>
         </ul>
+        <button className="clear-completed"
+                onClick={() => deleteCompleted()}>Clear completed
+        </button>
       </footer>
     );
   }
