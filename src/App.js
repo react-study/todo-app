@@ -20,9 +20,9 @@ export default class App extends Component {
     super();
     this.state = {
       todos: [
-        {id: getUniqueId(), text: 'PC방 가기'},
-        {id: getUniqueId() + 1, text: '자전거 타기'},
-        {id: getUniqueId() + 2, text: '피자 먹기'}
+        {id: getUniqueId(), text: 'PC방 가기', done: false},
+        {id: getUniqueId() + 1, text: '자전거 타기', done: false},
+        {id: getUniqueId() + 2, text: '피자 먹기', done: false}
       ],
       editId: null
     };
@@ -74,11 +74,46 @@ export default class App extends Component {
     this.setState({todos: newTodos, editId: null});
   }
 
+  toggleTodo(id) {
+    const newTodos = [...this.state.todos];
+    const idx = newTodos.findIndex(v => v.id === id);
+    newTodos[idx].done = !newTodos[idx].done;
+    this.setState({todos: newTodos});
+  }
+
+  toggleAll() {
+    let newTodos = [...this.state.todos];
+    const cntDone = newTodos.reduce((p, c) => {
+      if(c.done) p++;
+      return p;
+    }, 0);
+    // 전부 chk 됐을 때
+    if(cntDone === newTodos.length) {
+      newTodos = newTodos.map(({done, ...v}) => {
+        return {
+          done: false,
+          ...v
+        }
+      })
+    }
+    // 하나도 chk되지 않았거나 하나라도 chk 됐을 때
+    else {
+      newTodos = newTodos.map(({done, ...v}) => {
+        return {
+          done: true,
+          ...v
+        }
+      })
+    }
+    this.setState({todos: newTodos});
+  }
+
   componentDidMount() {
     window.addEventListener('click', this.cancelEditTodo);
   }
 
   render() {
+    const {todos, editId} = this.state;
     return (
       <div className="todo-app"
            onClick={() => this.cancelEditTodo()}>
@@ -87,12 +122,14 @@ export default class App extends Component {
          리액트가 this 바인딩을 제대로 못해서 아래와 같이 써줘야 함.
          */}
         <Header addTodo={newTodo => this.addTodo(newTodo)} />
-        <TodoList todos={this.state.todos}
-                  editId={this.state.editId}
+        <TodoList todos={todos}
+                  editId={editId}
                   deleteTodo={id => this.deleteTodo(id)}
                   editTodo={id => this.editTodo(id)}
                   cancelEditTodo={this.cancelEditTodo}
-                  saveTodo={text => this.saveTodo(text)} />
+                  saveTodo={text => this.saveTodo(text)}
+                  toggleTodo={id => this.toggleTodo(id)}
+                  toggleAll={() => this.toggleAll()} />
         {/*<Footer />*/}
       </div>
     );

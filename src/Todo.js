@@ -27,11 +27,15 @@ export default class Todo extends Component {
   }
 
   render() {
-    const {isEdited, text, id, editTodo} = this.props;
+    const {isEdited, text, id, done, editTodo, deleteTodo, toggleTodo} = this.props;
     return (
-      <li className={ClassNames('todo-item', {editing: isEdited})}>
+      <li className={ClassNames('todo-item', {
+        editing: isEdited,
+        completed: done
+      })}>
         <div className="todo-item__view">
-          <div className="toggle" />
+          <div className="toggle"
+               onClick={() => toggleTodo(id)}/>
           <div className="todo-item__view__text"
                onDoubleClick={() => editTodo(id)}>
             {text}
@@ -40,7 +44,7 @@ export default class Todo extends Component {
            실제 메소드를 호출할 때는 매개변수를 생략하고 씀.
            */}
           <button className="todo-item__destroy"
-                  onClick={()=> this.props.deleteTodo(id)} />
+                  onClick={()=> deleteTodo(id)} />
         </div>
         <input type="text"
                className="todo-item__edit"
