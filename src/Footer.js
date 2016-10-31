@@ -3,7 +3,7 @@ import ClassNames from 'classnames';
 
 export default class Footer extends Component {
   render() {
-    const {activeLength, completedLength, nowShowing, changeShowing, deleteCompleted} = this.props;
+    const {activeLength, doneLength, filter, changeFilter, deleteDone} = this.props;
     return (
       <footer className="footer">
         <span className="todo-count">
@@ -11,20 +11,20 @@ export default class Footer extends Component {
         </span>
         <ul className="todo-filters">
           <li>
-            <a className={ClassNames({selected: nowShowing === 'All'})}
-               onClick={() => changeShowing('All')}>All</a>
+            <a className={ClassNames({selected: filter === 'All'})}
+               onClick={() => changeFilter('All')}>All</a>
           </li>
           <li>
-            <a className={ClassNames({selected: nowShowing === 'Active'})}
-               onClick={() => changeShowing('Active')}>Active</a>
+            <a className={ClassNames({selected: filter === 'Active'})}
+               onClick={() => changeFilter('Active')}>Active</a>
           </li>
           <li>
-            <a className={ClassNames({selected: nowShowing === 'Completed'})}
-               onClick={() => changeShowing('Completed')}>Completed</a>
+            <a className={ClassNames({selected: filter === 'Done'})}
+               onClick={() => changeFilter('Done')}>Done</a>
           </li>
         </ul>
-        <button className={ClassNames('todo-delete-completed', {hidden: !completedLength})}
-                onClick={() => deleteCompleted()}>Clear completed
+        <button className={ClassNames('todo-delete-completed', {hidden: !doneLength})}
+                onClick={() => deleteDone()}>Delete done
         </button>
       </footer>
     );

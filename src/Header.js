@@ -2,12 +2,6 @@ import React, {Component} from 'react';
 
 export default class Header extends Component {
   handleKeyDown(e) {
-    /*
-    const val = e.target.value;
-    if(!val || e.keyCode !== 13) return;
-    this.props.addTodo(val);
-    e.target.value = '';
-    */
     const val = this._input.value;
     if(!val || e.keyCode !== 13) return;
     this.props.addTodo(val);
