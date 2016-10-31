@@ -82,22 +82,11 @@ export default class App extends Component {
   }
 
   toggleAll() {
-    let newTodos = [...this.state.todos];
-    if(newTodos.every(e => e.done)) { // 전부 chk 됐을 때
-      newTodos = newTodos.map(({done, ...v}) => {
-        return {
-          done: false,
-          ...v
-        }
-      });
-    } else { // 하나도 chk되지 않았거나 하나라도 chk 됐을 때
-      newTodos = newTodos.map(({done, ...v}) => {
-        return {
-          done: true,
-          ...v
-        }
-      })
-    }
+    const isCheckedAll = this.state.todos.every(v => v.done);
+    const newTodos = this.state.todos.map(v => {
+      v.done = !isCheckedAll;
+      return v;
+    });
     this.setState({todos: newTodos});
   }
 
