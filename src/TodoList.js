@@ -3,18 +3,20 @@ import ClassNames from 'classnames';
 import Todo from './Todo';
 
 const TodoList = ({
-  todos, editId, deleteTodo, editTodo, cancelEditTodo, saveTodo, toggleTodo, toggleAll
+  todos, editId, nowShowing, deleteTodo, editTodo, cancelEditTodo, saveTodo, toggleTodo, toggleAll
 }) => {
-  const todoList = todos.map((v, i) => (
+  const todoList = todos.map((v, i) => {
+    if(nowShowing === 'Active' && v.done) return;
+    else if(nowShowing === 'Completed' && !v.done) return;
     // 단순히 중계 역할만 할 때는 아래와 같이 씀.
-    <Todo key={i} {...v}
-          isEdited={editId === v.id}
-          deleteTodo={deleteTodo}
-          editTodo={editTodo}
-          cancelEditTodo={cancelEditTodo}
-          saveTodo={saveTodo}
-          toggleTodo={toggleTodo} />
-  ));
+    return <Todo key={i} {...v}
+                 isEdited={editId === v.id}
+                 deleteTodo={deleteTodo}
+                 editTodo={editTodo}
+                 cancelEditTodo={cancelEditTodo}
+                 saveTodo={saveTodo}
+                 toggleTodo={toggleTodo} />
+  });
   return (
     <section className="todo-app__main">
       <div className={ClassNames('toggle-all', {checked: todos.every(v => v.done)})}

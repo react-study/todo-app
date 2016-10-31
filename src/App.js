@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Header from './Header';
 import TodoList from './TodoList';
-// import Footer from './Footer';
+import Footer from './Footer';
 
 // getUniqueId는 이 컴포넌트에서만 쓰므로 따로 뺌.
 const getUniqueId = () => Date.now();
@@ -24,7 +24,8 @@ export default class App extends Component {
         {id: getUniqueId() + 1, text: '자전거 타기', done: false},
         {id: getUniqueId() + 2, text: '피자 먹기', done: false}
       ],
-      editId: null
+      editId: null,
+      nowShowing: 'All'
     };
     // window 객체에서 this를 제대로 바인딩하지 못해서 여기에서 바인딩 해줌.
     this.cancelEditTodo = this.cancelEditTodo.bind(this);
@@ -90,12 +91,26 @@ export default class App extends Component {
     this.setState({todos: newTodos});
   }
 
+  getLeftItems() {
+    const todos = this.state.todos;
+    return todos.length - todos.reduce((p, c) => {
+      if(c.done) {
+        p++;
+      }
+      return p;
+    }, 0);
+  }
+
+  changeShowing(filter) {
+    this.setState({nowShowing: filter});
+  }
+
   componentDidMount() {
     window.addEventListener('click', this.cancelEditTodo);
   }
 
   render() {
-    const {todos, editId} = this.state;
+    const {todos, editId, nowShowing} = this.state;
     return (
       <div className="todo-app"
            onClick={() => this.cancelEditTodo()}>
@@ -106,13 +121,16 @@ export default class App extends Component {
         <Header addTodo={newTodo => this.addTodo(newTodo)} />
         <TodoList todos={todos}
                   editId={editId}
+                  nowShowing={nowShowing}
                   deleteTodo={id => this.deleteTodo(id)}
                   editTodo={id => this.editTodo(id)}
                   cancelEditTodo={this.cancelEditTodo}
                   saveTodo={text => this.saveTodo(text)}
                   toggleTodo={id => this.toggleTodo(id)}
                   toggleAll={() => this.toggleAll()} />
-        {/*<Footer />*/}
+        <Footer nowShowing={nowShowing}
+                changeShowing={filter => this.changeShowing(filter)}
+                getLeftItems={() => this.getLeftItems()} />
       </div>
     );
   }
