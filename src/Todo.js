@@ -23,19 +23,16 @@ export default class Todo extends Component {
     window.addEventListener('click', this.cancelEditTodo);
   }
 
-  // setState() 이벤트가 발생하서 다시 렌더링이 발생할 때 일어나는 이벤트.
-  // isEdited 스테이트가 변경됐을 때 렌더링을 다시 하고
-  // 그 때 input 창에 포커스를 줌.
-  componentDidUpdate() {
-    if(this.state.isEdited) this.editField.focus();
-  }
-
+  // setState가 발생하면 렌더링이 다시 발생됨.
+  // 이는 퍼포먼스 저하와도 직결되어 stateless 컴포넌트를 지향함.
+  // 따라서 state에 따라 클래스를 주는 게 아니라 ref를 사용하여 클래스를 지정함.
   editTodo() {
-    this.setState({isEdited: true});
+    this.todo.className += ' editing';
+    this.editField.focus();
   }
 
   cancelEditTodo() {
-    this.setState({isEdited: false});
+    this.todo.className = this.todo.className.replace(' editing', '');
   }
 
   // 그냥 input에 value를 주면 readOnly가 됨.
@@ -70,7 +67,10 @@ export default class Todo extends Component {
   render() {
     const {text, id} = this.props;
     return (
-      <li className={ClassNames('todo-item', {editing: this.state.isEdited})}>
+      <li className="todo-item"
+          ref={ref => {
+            this.todo = ref;
+      }}>
         <div className="todo-item__view">
           <div className="toggle" />
           <div className="todo-item__view__text"
