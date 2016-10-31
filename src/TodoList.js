@@ -2,15 +2,12 @@ import React, {Component} from 'react';
 import Todo from './Todo';
 
 const TodoList = ({
-  todos, editId, deleteTodo, editTodo, cancelEditTodo, saveTodo
+  todos, deleteTodo, saveTodo
 }) => {
   const todoList = todos.map((v, i) => (
     // 단순히 중계 역할만 할 때는 아래와 같이 씀.
     <Todo key={i} {...v}
-          isEdited={editId === v.id}
           deleteTodo={deleteTodo}
-          editTodo={editTodo}
-          cancelEditTodo={cancelEditTodo}
           saveTodo={saveTodo} />
   ));
   return (
