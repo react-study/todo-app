@@ -2,23 +2,22 @@ import React, {Component} from 'react';
 import ClassNames from 'classnames';
 import Todo from './Todo';
 
-// 아래 클래스를 축약화 시킨 구문.
 const TodoList = ({
-  todos, editIdx, filter, deleteTodo, editTodo, cancelEditTodo, updateTodo, toggleTodo, toggleAll
+  todos, editId, filter, deleteTodo, editTodo, cancelEditTodo, updateTodo, toggleTodo, toggleAll
 }) => {
   const todoList = todos.map((v, i) => {
-    // Active로 필터링 했는데 현재 배열의 요소가 완료인 경우 컴포넌트를 만들지 않고,
+    // Active로 필터링 했는데 현재 배열의 요소가 완료인 경우 컴포넌트를 만들지 않음.
+    if(filter === 'Active' && v.done) return;
     // Done으로 필터링 했는데 현재 배열의 요소가 미완료인 경우 컴포넌트를 만들지  않음.
-    if((filter === 'Active' && v.done) || (filter === 'Done' && !v.done)) return;
+    else if(filter === 'Done' && !v.done) return;
     // 단순히 중계 역할만 할 때는 아래와 같이 씀.
-    return (<Todo key={i} {...v}
-                  idx={i}
-                  isEdited={editIdx === i}
-                  deleteTodo={deleteTodo}
-                  editTodo={editTodo}
-                  cancelEditTodo={cancelEditTodo}
-                  updateTodo={updateTodo}
-                  toggleTodo={toggleTodo} />);
+    return <Todo key={i} {...v}
+                 isEdited={editId === v.id}
+                 deleteTodo={deleteTodo}
+                 editTodo={editTodo}
+                 cancelEditTodo={cancelEditTodo}
+                 updateTodo={updateTodo}
+                 toggleTodo={toggleTodo} />
   });
   return (
     <section className="todo-app__main">
@@ -30,35 +29,28 @@ const TodoList = ({
     </section>
   );
 };
+
 export default TodoList;
 
-/*
-export default class TodoList extends Component {
+/*export default class TodoList extends Component {
   render() {
-    const {todos, editIdx, filter, deleteTodo, editTodo, cancelEditTodo, updateTodo, toggleTodo, toggleAll} = this.props;
-    const todoList = todos.map(({...v}, i) => {
-      // Active로 필터링 했는데 현재 배열의 요소가 완료인 경우 컴포넌트를 만들지 않고,
-      // Done으로 필터링 했는데 현재 배열의 요소가 미완료인 경우 컴포넌트를 만들지  않음.
-      if((filter === 'Active' && v.done) || (filter === 'Done' && !v.done)) return;
+    const {todos, editId, deleteTodo, editTodo, cancelEditTodo, saveTodo} = this.props;
+    const todoList = todos.map(({...v}, i) => (
       // 단순히 중계 역할만 할 때는 아래와 같이 씀.
-      return (<Todo key={i} {...v}
-                    idx={i}
-                    isEdited={editIdx === i}
-                    deleteTodo={deleteTodo}
-                    editTodo={editTodo}
-                    cancelEditTodo={cancelEditTodo}
-                    updateTodo={updateTodo}
-                    toggleTodo={toggleTodo} />);
-    });
+      <Todo key={i} {...v}
+            isEdited={editId === v.id}
+            deleteTodo={deleteTodo}
+            editTodo={editTodo}
+            cancelEditTodo={cancelEditTodo}
+            saveTodo={saveTodo} />
+    ));
     return (
       <section className="todo-app__main">
-        <div className={ClassNames('toggle-all', {checked: todos.every(v => v.done)})}
-             onClick={() => toggleAll()} />
+        <div className="toggle-all" />
         <ul className="todo-list">
           {todoList}
         </ul>
       </section>
     );
   }
-}
-*/
+}*/
