@@ -117,7 +117,8 @@ export default class App extends Component {
   }
 
   render() {
-    const {todos, editId, filter} = this.state;
+    const {todos, editId} = this.state;
+    const {filter} = this.props.routes[1];
     const doneLength = todos.filter(v => v.done).length;
     const activeLength = todos.length - doneLength;
     return (

@@ -4,7 +4,8 @@ import {Link} from 'react-router';
 
 export default class Footer extends Component {
   render() {
-    const {activeLength, doneLength, filter, changeFilter, deleteDone} = this.props;
+    let {activeLength, doneLength, filter, changeFilter, deleteDone} = this.props;
+
     return (
       <footer className="footer">
         <span className="todo-count">
