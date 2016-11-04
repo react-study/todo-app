@@ -17,10 +17,10 @@ export default class Footer extends Component {
               <Link to="/" className={ClassNames({selected: !filter})}>All</Link>
           </li>
           <li>
-              <Link to="/active" className={ClassNames({selected: filter === 'Active'})}>Active</Link>
+              <Link to="/active" className={ClassNames({selected: filter === 'active'})}>Active</Link>
           </li>
           <li>
-              <Link to="/done" className={ClassNames({selected: filter === 'Done'})}>Done</Link>
+              <Link to="/done" className={ClassNames({selected: filter === 'done'})}>Done</Link>
 
           </li>
         </ul>
