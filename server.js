@@ -31,6 +31,9 @@ var app = new express();
 app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
 app.use(express.static(config.context));
+app.get('*', (req, res) => {
+   res.sendFile(path.resolve(config.context, 'index.html'))
+});
 
 app.listen(config.PORT, function onAppListening(err) {
     if (err) {
