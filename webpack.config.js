@@ -1,10 +1,12 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-var HOST  = 'http://localhost';
-var PORT  = 8080;
-var URL   = HOST + ':' + PORT + '/';
-var _PATH = path.resolve(__dirname, 'src');
+const HOST  = 'http://localhost';
+const PORT  = 8080;
+const URL   = HOST + ':' + PORT + '/';
+const _PATH = path.resolve(__dirname, 'src');
 
 module.exports = {
   HOST: HOST,
@@ -18,7 +20,7 @@ module.exports = {
     index: [
       'webpack-hot-middleware/client?path=' + URL + '__webpack_hmr',
       'webpack/hot/only-dev-server',
-      path.resolve(_PATH, 'main')
+      path.resolve(_PATH, 'main'),
     ]
   },
   output: {
@@ -33,6 +35,9 @@ module.exports = {
         include: [ _PATH ],
         exclude: [ /node_modules/ ],
         loader: 'react-hot!babel?cacheDirectory'
+      }, {
+        test: /\.css$/,
+        loader: 'style!css?sourceMap'
       }
     ]
   },
