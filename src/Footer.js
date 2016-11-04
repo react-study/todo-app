@@ -14,16 +14,13 @@ export default class Footer extends Component {
         </span>
         <ul className="todo-filters">
           <li>
-              <Link to="/" className={ClassNames({selected: filter === 'All'})}
-                    onClick={() => changeFilter('All')}>All</Link>
+              <Link to="/" className={ClassNames({selected: !filter})}>All</Link>
           </li>
           <li>
-              <Link to="/active" className={ClassNames({selected: filter === 'Active'})}
-                    onClick={() => changeFilter('Active')}>Active</Link>
+              <Link to="/active" className={ClassNames({selected: filter === 'Active'})}>Active</Link>
           </li>
           <li>
-              <Link to="/done" className={ClassNames({selected: filter === 'Done'})}
-                    onClick={() => changeFilter('Done')}>Done</Link>
+              <Link to="/done" className={ClassNames({selected: filter === 'Done'})}>Done</Link>
 
           </li>
         </ul>

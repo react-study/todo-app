@@ -7,7 +7,7 @@ import Todo from './Todo';
 render(
   <Router history={browserHistory}>
     <Route path="/" component={App}>
-      <IndexRoute component={App} filter="All" />
+      <IndexRoute component={App} filter="" />
       <Route path="/active" component={Todo} filter="Active" />
       <Route path="/done" component={Todo} filter="Done" />
     </Route>

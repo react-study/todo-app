@@ -32,7 +32,6 @@ export default class App extends Component {
       editId: 0,
       // 어떤 것이 필터링 됐는지 알기 위함이고, 이 스테이트를 통해 클래스가 변경되고
       // TodoList 컴포넌트에서 어떠한 todo들을 todo 컴포넌트로 내려줄지 결정함.
-      filter: 'All'
     };
     // window 객체에서 this를 제대로 바인딩하지 못해서 여기에서 바인딩 해줌.
     this.cancelEditTodo = this.cancelEditTodo.bind(this);
@@ -100,10 +99,6 @@ export default class App extends Component {
       return v;
     });
     this.setState({todos: newTodos});
-  }
-
-  changeFilter(filter) {
-    this.setState({filter: filter});
   }
 
   deleteDone() {
