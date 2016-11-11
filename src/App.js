@@ -15,12 +15,8 @@ class App extends Component {
                 {id: 1002, text: '리코타샐러드에 봉골레 파스타'},
                 {id: 1003, text: '떡순튀'}
             ],
-            editing: null,
-            filter: 'All'
+            editing: null
         };
-    }
-    handleSelectFilter(filter) {
-        this.setState({ filter });
     }
     handleDeleteCompleted() {
         const newTodos = this.state.todos.filter(v=> !v.done);
@@ -81,11 +77,13 @@ class App extends Component {
     render() {
         const {
             todos,
-            editing,
-            filter
+            editing
         } = this.state;
+        const filter = this.props.routeParams.filter;
+
         const activeLength = todos.filter(v=> !v.done).length;
         const completedLength = todos.length - activeLength;
+
         return (
             <div className="todo-app">
                 <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
@@ -106,6 +104,7 @@ class App extends Component {
                     completedLength = {completedLength}
                     handleSelectFilter = {filter=> this.handleSelectFilter(filter)}
                     handleDeleteCompleted = {()=> this.handleDeleteCompleted()}
+                    completeLength = {todos.filter(v=> v.done).length}
                 />
             </div>
         );
