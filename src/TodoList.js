@@ -3,14 +3,22 @@ import Todo from './Todo';
 
 const TodoList = ({
     todos,
+    editing,
+    handleEditTodo,
+    handleSaveTodo,
+    handleCancelEditTodo,
     handleDeleteTodo
 }) => {
-    const todoList = todos.map((todo, i) => (
+    const todoList = todos.map(({id, text, done}, i) => (
         <Todo
-            key={`todo#${i}`}
-            text={todo.text}
-            done={todo.done}
-            handleDeleteTodo={()=>handleDeleteTodo(todo)}
+            key              = {id}
+            text             = {text}
+            done             = {done}
+            editing          = {editing === id}
+            onEditTodo       = {()=> handleEditTodo(id)}
+            onSaveTodo       = {text=> handleSaveTodo(id, text)}
+            onCancelEditTodo = {()=> handleCancelEditTodo()}
+            onDeleteTodo     = {()=> handleDeleteTodo(id)}
         />
     ));
     return (
