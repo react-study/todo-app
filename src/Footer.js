@@ -1,26 +1,39 @@
 import React from 'react';
 
-const tempLength = 4;
-
-const Footer = () => (
+const Footer = ({
+    filter,
+    activeLength,
+    completedLength,
+    handleSelectFilter,
+    handleDeleteCompleted
+}) => (
     <div className="footer">
         <span className="todo-count">
-            <strong>{tempLength}</strong>{' '}
-            <span>{tempLength > 1 ? 'items' : 'item'}</span>
+            <strong>{activeLength}</strong>{' '}
+            <span>{activeLength > 1 ? 'items' : 'item'}</span>
             {' '}left
         </span>
         <ul className="todo-filters">
             <li>
-                <a>All</a>
+                <a onClick = {()=> handleSelectFilter('All')}
+                    className = {filter === 'All' ? 'selected' : ''}
+                >All</a>
             </li>
             <li>
-                <a>Active</a>
+                <a onClick = {()=> handleSelectFilter('Active')}
+                    className = {filter === 'Active' ? 'selected' : ''}
+                >Active</a>
             </li>
             <li>
-                <a>Completed</a>
+                <a onClick = {()=> handleSelectFilter('Completed')}
+                    className = {filter === 'Completed' ? 'selected' : ''}
+                >Completed</a>
             </li>
         </ul>
-        <button className="todo-delete-completed">
+        <button
+            className={`todo-delete-completed${!completedLength ? ' hidden' : ''}`}
+            onClick={handleDeleteCompleted}
+        >
             Delete Completed
         </button>
     </div>
