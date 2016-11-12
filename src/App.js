@@ -3,6 +3,7 @@ import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
 import axios from 'axios';
+import update from 'immutability-helper';
 
 const axiosApi = axios.create({
     baseURL : 'http://localhost:2403/todos/',
@@ -39,8 +40,11 @@ class App extends Component {
     }
     handleDeleteCompleted() {
         const prevTodos = this.state.todos;
+        const newTodos = update(prevTodos, {
+            $apply: todos => todos.filter(v=> !v.done)
+        });
         this.setState({
-            todos: prevTodos.filter(v=> !v.done)
+            todos: newTodos
         });
 
         const axiosPromises = prevTodos.filter(v => v.done)
@@ -68,8 +72,9 @@ class App extends Component {
     handleDeleteTodo(id) {
         const prevTodos = this.state.todos;
         const deleteIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos.splice(deleteIndex, 1);
+        const newTodos = update(prevTodos, {
+            $splice: [[deleteIndex, 1]]
+        });
         this.setState({ todos: newTodos });
 
         ax({
@@ -86,8 +91,13 @@ class App extends Component {
     handleSaveTodo(id, newText) {
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos[editIndex].text = newText;
+        const newTodos = update(prevTodos, {
+            [editIndex]: {
+                text: {
+                    $set: newText
+                }
+            }
+        });
         this.setState({
             todos: newTodos,
             editing: null
@@ -111,9 +121,11 @@ class App extends Component {
     handleToggleAll() {
         const prevTodos = this.state.todos;
         const newToggleAll = !prevTodos.every(v=> v.done);
-        const newTodos = prevTodos.map(todo => {
-            todo.done = newToggleAll;
-            return todo
+        const newTodos = update(prevTodos, {
+            $apply: todos => todos.map(todo => {
+                todo.done = newToggleAll;
+                return todo;
+            })
         });
         this.setState({
             todos: newTodos
@@ -132,8 +144,13 @@ class App extends Component {
     handleToggleTodo(id) {
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos[editIndex].done = !newTodos[editIndex].done;
+        const newTodos = update(prevTodos, {
+            [editIndex]: {
+                done: {
+                    $set: !prevTodos[editIndex].done
+                }
+            }
+        });
         this.setState({ todos: newTodos });
 
         ax({
