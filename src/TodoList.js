@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ClassNames from 'classnames';
 import Todo from './Todo';
 
 const TodoList = ({
@@ -12,7 +13,7 @@ const TodoList = ({
     handleToggleAll,
     handleToggleTodo
 }) => {
-    const todoList = todos.map(({id, text, done}, i) => {
+    const todoList = todos.map(({id, text, done}) => {
         if( (done && filter === 'Active') || (!done && filter === 'Completed') ){
             return;                       
         }
@@ -33,7 +34,8 @@ const TodoList = ({
     return (
         <div className="todo-app__main">
             <div 
-                className={"toggle-all${todos.every(v=> v.done) ? ' checked' : ''}"}
+                className = {ClassNames("toggle-all", {checked : todos.every(v  => v.done)})}
+                //className={"toggle-all${todos.every(v=> v.done) ? ' checked' : ''}"}
                 onClick={handleToggleAll}
             />
             <ul className="todo-list">

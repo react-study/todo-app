@@ -2,80 +2,160 @@ import React, { Component } from 'react';
 import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
+import axios from 'axios';
 
-const generateUId = ()=> Date.now();
+const axiosApi = axios.create({
+	baseURL : 'http://localhost:2404/todos/',
+	timeout : 1000,
+	reponstType : 'json'
+});
+
+const ax = ({
+	method = 'post',
+	url = '/',
+	data, 
+	res,
+	rej = err => { console.error(err)}
+}) => {
+	if( data ) return axiosApi[method](url, data).then(res).catch(rej);
+	return axiosApi[method](url, data).then(res).catch(rej);
+}
+
 
 class App extends Component {
     constructor() {
         super();
         this.state = {
-            todos: [
-                {id: 1000, text: '내 생에'},
-                {id: 1001, text: '봄날은'},
-                {id: 1002, text: '간다'},
-                {id: 1003, text: '바람처럼'}
-            ],
+            todos: [],
             editing: null,
-            filter: 'All'
+//            filter: 'All'
         };
     }
-    handleAddTodo(text) {
-        this.setState({
-            todos: [ ...this.state.todos, {
-                id: generateUId(),
-                text
-            }]
-        });
+	
+	componentWillMount(){
+		ax({
+			method : 'get',
+			res: res =>{
+				this.setState({todos: res.data});
+			}
+		});
+	}
+    
+	handleAddTodo(text) {
+		ax({
+			data : {
+				text,
+				done: false
+			},
+			res: res => {
+				this.setState({
+					todos: [...this.state.todos, res.data]
+				})
+			}
+		});
     }
+	
     handleDeleteTodo(id) {
-        const newTodos = [...this.state.todos];
-        const deleteIndex = newTodos.findIndex(v => v.id === id);
-        newTodos.splice(deleteIndex, 1);
-        this.setState({ todos: newTodos });
+		ax({
+			method: 'delete',
+			url : `/${id}`,
+			res : res =>{
+				const newTodos = [...this.state.todos];
+				const deleteIndex = newTodos.findIndex(v => v.id === id);
+				newTodos.splice(deleteIndex, 1);
+				this.setState({todos : newTodos});
+			}
+		})
     }
+	
     handleEditTodo(id) {
         this.setState({
             editing: id
         });
     }
-    handleSaveTodo(id, newText) {
-        const newTodos = [...this.state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex].text = newText;
-        this.setState({
-            todos: newTodos,
-            editing: null
-        });
-    }
+	
+//	handleSaveTodo(id, newText) {
+
+//        const newTodos = [...this.state.todos];
+//        const editIndex = newTodos.findIndex(v => v.id === id);
+//        newTodos[editIndex].text = newText;
+//		
+//		ax({
+//			method : 'put',
+//			url : `/${id}`,
+//			data : newTodo,
+//			res : res => {
+//				const newTodos = [...this.state.todos];
+//				const editIndex = newTodos.findIndex(v => v.id === id);
+//				newTodos[editIndex] = res.data;
+//				this.setState({
+//					todos : newTodos,
+//					editing : null
+//				});
+//			}
+//		})
+//    }
+	
     handleCancelEditTodo() {
         this.setState({
             editing: null
         });
     }
-    handleToggleAll(){
+
+	handleToggleAll(){
         const newToggleAll = !this.state.todos.every(v => v.done);
-        const newTodos = this.state.todos.map( v => {
-            v.done = newToggleAll;
-            return v;
-        });
-        this.setState({
-            todos : newTodos
-        });
+        const axiosPromise = this.state.todos.map( v => ax({
+			method: 'put',
+			url: `${v.id}`,
+			data: {done: newToggleAll}
+		}));
+		
+		axios.all(axiosPromise).then(res => {
+			console.log(res);
+//			this.setState({
+//				todos: res.map(reponse => response.data);
+//			});
+		});
     }
+	
     handleToggleTodo(id){
-        const newTodos = [...this.state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex].done = !newTodos[editIndex].done;
-        this.setState({
-            todos : newTodos
-        });
+		const isDone = this.state.todos.find(v => v.id === id).done;
+		ax({
+			method: 'put',
+			data : {done: !isDone},
+			res : res => {
+				const newTodos = [...this.state.todos];
+				const editIndex = newTodos.findIndex(v => v.id === id);
+				newTodos.splice(editIndex, 1, res.data);
+				this.setState({
+					todos : newTodos
+				});				
+			}
+		})
+
     }
+	
     handleSelectFilter(filter){
         this.setState({filter});
     }
+	
     handleDeleteCompleted(){
-        const newTodos = this.state.todos.filter( v => !v.done);
-        this.setState({todos : newTodos});
+		const axiosPromise = this.state.todos.filter(v => v.done)
+			.filter(v => v.done)
+			.map(todo => ax({
+				method : 'delete',
+				url : `/${todo.id}`
+			}));
+		
+		const newTodos = this.state.todos.filter(v => !v.done);
+		
+		axios.all(axiosPromise).then(res => {
+			this.setState({
+				todos: newTodos
+			});
+		}).catch(err => { 
+			console.erroe(err); 
+		});
     }
   
     render() {

@@ -1,4 +1,5 @@
 import React from 'react';
+import ClassNames from 'classnames';
 
 const Footer = ({
     filter,
@@ -17,7 +18,8 @@ const Footer = ({
             <li>
                 <a 
                     onClick = { () => handleSelectFilter('All')}
-                    className = {filter === 'All' ? 'selected' : ''}
+                    //className = {filter === 'All' ? 'selected' : ''}
+                    className = {ClassNames({selected: filter === 'All'})}
                 >
                     전체
                 </a>
@@ -25,7 +27,8 @@ const Footer = ({
             <li>
                 <a
                     onClick = {() => handleSelectFilter('Active')}
-                    className = {filter === 'Active' ? 'selected' : ''}
+                    //className = {filter === 'Active' ? 'selected' : ''}
+                    className = {ClassNames({selected: filter === 'Active'})}
                 >
                     할 목록
                 </a>
@@ -33,7 +36,8 @@ const Footer = ({
             <li>
                 <a 
                     onClick = { () =>    handleSelectFilter('Completed')}
-                    className = {filter === 'Completed' ? 'selected' : ''}
+                    //className = {filter === 'Completed' ? 'selected' : ''}
+                    className = {ClassNames({selected: filter === 'Completed'})}
                 >
                     완료 목록
                 </a>
