@@ -3,6 +3,7 @@ import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
 import axios from 'axios';
+import update from 'immutability-helper';
 
 const axiosApi = axios.create({
 	baseURL : 'http://localhost:2404/todos/',
@@ -14,7 +15,7 @@ const ax = ({
 	method = 'post',
 	url = '/',
 	data, 
-	res,
+	res = () => {},
 	rej = err => { console.error(err)}
 }) => {
 	if( data ) return axiosApi[method](url, data).then(res).catch(rej);
@@ -28,7 +29,7 @@ class App extends Component {
         this.state = {
             todos: [],
             editing: null,
-//            filter: 'All'
+            filter: 'All'
         };
     }
 	
@@ -55,18 +56,21 @@ class App extends Component {
 		});
     }
 	
-    handleDeleteTodo(id) {
-		ax({
-			method: 'delete',
-			url : `/${id}`,
-			res : res =>{
-				const newTodos = [...this.state.todos];
-				const deleteIndex = newTodos.findIndex(v => v.id === id);
-				newTodos.splice(deleteIndex, 1);
-				this.setState({todos : newTodos});
-			}
-		})
-    }
+//    handleDeleteTodo(id) {
+//		const pervTodos = this.state.todos;
+//		const newTodos = [...prevTodos];
+//		const deleteIndex = newTodos.findIndex(v => v.id === id);
+//		newTodos.splice(deleteIndex, 1);
+//		this.setState({todos : newTodos});
+//		
+//		ax({
+//			method: 'delete',
+//			url : `/${id}`,
+//			rej: err => {
+//				this.setState({ todos: prevTodos});
+//			}
+//		})
+//    }
 	
     handleEditTodo(id) {
         this.setState({
@@ -74,27 +78,31 @@ class App extends Component {
         });
     }
 	
-//	handleSaveTodo(id, newText) {
-
-//        const newTodos = [...this.state.todos];
-//        const editIndex = newTodos.findIndex(v => v.id === id);
-//        newTodos[editIndex].text = newText;
-//		
-//		ax({
-//			method : 'put',
-//			url : `/${id}`,
-//			data : newTodo,
-//			res : res => {
-//				const newTodos = [...this.state.todos];
-//				const editIndex = newTodos.findIndex(v => v.id === id);
-//				newTodos[editIndex] = res.data;
-//				this.setState({
-//					todos : newTodos,
-//					editing : null
-//				});
-//			}
-//		})
-//    }
+	handleSaveTodo(id, newText) {
+		const prevTodos = this.state.todos;
+		const editIndex = prevTodos.findIndex(v => v.id === id);
+		const newTodos = update(prevTodos, {
+			[editIndex]: {
+				text : {
+					$set : newText
+				}
+			}	
+		})
+		
+		this.setState({
+			todos : newTodos,
+			editing : null
+		});	
+		
+		ax({
+			method : 'put',
+			url : `/${id}`,
+			data : newTodo,
+			rej: err => {
+				this.setState({ todos: prevTodos});
+			}
+		})
+    }
 	
     handleCancelEditTodo() {
         this.setState({
@@ -103,34 +111,39 @@ class App extends Component {
     }
 
 	handleToggleAll(){
+		const prevTodos = this.state.todos;
+		const newTodos = [...prevTodos];
         const newToggleAll = !this.state.todos.every(v => v.done);
+		newTodos.map(todo =>{
+			todo.done = newToggleAll;
+			return todo;
+		});
+		this.setState({todos: newTodos});
+		
         const axiosPromise = this.state.todos.map( v => ax({
 			method: 'put',
 			url: `${v.id}`,
 			data: {done: newToggleAll}
 		}));
 		
-		axios.all(axiosPromise).then(res => {
-			console.log(res);
-//			this.setState({
-//				todos: res.map(reponse => response.data);
-//			});
+		axios.all(axiosPromise).then(()=>{})
+		.catch(err => {
+			this.setState({todos: prevTodos});
 		});
     }
 	
     handleToggleTodo(id){
+		const prevTodos = this.state.todos;
+		const newTodos = [...prevTodos];
+		const editindex = newTodos.findIndex(v => v.id === id);
 		const isDone = this.state.todos.find(v => v.id === id).done;
+		this.setState({todos: newTodos});
+		
 		ax({
 			method: 'put',
-			data : {done: !isDone},
-			res : res => {
-				const newTodos = [...this.state.todos];
-				const editIndex = newTodos.findIndex(v => v.id === id);
-				newTodos.splice(editIndex, 1, res.data);
-				this.setState({
-					todos : newTodos
-				});				
-			}
+			url : `/${id}`,
+			data: {done: newTodos[editIndex].done},
+			rej:err => {this.setState({todos: prevTodos})}
 		})
 
     }
