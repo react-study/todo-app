@@ -14,7 +14,7 @@ class Header extends Component {
         return (
             <header>
                 <h1 className="todo-app__header">todos</h1>
-                <input
+				<input
                     className="todo-app__new-todo"
                     placeholder="What needs to be done?"
                     ref={ref=> { this._input = ref; }}

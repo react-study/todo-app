@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ClassNames from 'classnames';
 
 class Todo extends Component {
     componentDidUpdate() {
@@ -25,19 +24,14 @@ class Todo extends Component {
             onToggleTodo
         } = this.props;
         return (
-			// className 복수로 쓰기위한 문법 값이 done이면 completed 값이 editing이면 editing
-            <li className={ClassNames('todo-item', {
-                editing: editing,
-                completed: done
-            })}>
-                <div
-                    className="toggle"
-                    onClick={onToggleTodo}
+            <li className={`todo-item${editing ? ' editing' : ''}${done ? ' completed' : ''}`}>
+                <div 
+                    className = "toggle"
+                    onClick = {onToggleTodo}
                 />
                 <div className="todo-item__view">
-                    <div
-                        className="todo-item__view__text"
-                        onDoubleClick={onEditTodo}
+                    <div 
+                        className="todo-item__view__text" onDoubleClick={onEditTodo}
                     >
                         {text}
                     </div>

@@ -10,20 +10,21 @@ class App extends Component {
         super();
         this.state = {
             todos: [
-                {id: 1000, text: '내생에'},
+                {id: 1000, text: '내 생에'},
                 {id: 1001, text: '봄날은'},
                 {id: 1002, text: '간다'},
                 {id: 1003, text: '바람처럼'}
             ],
             editing: null
-        };
-    }
-    handleDeleteCompleted() {
-        const newTodos = this.state.todos.filter(v=> !v.done);
-        this.setState({ todos: newTodos });
+		};
     }
 	
-    handleAddTodo(text) {
+    handleDeleteCompleted(){
+        const newTodos = this.state.todos.filter( v => !v.done);
+        this.setState({todos : newTodos});
+    }
+	
+	handleAddTodo(text) {
         this.setState({
             todos: [ ...this.state.todos, {
                 id: generateUId(),
@@ -61,59 +62,60 @@ class App extends Component {
         });
     }
 	
-    handleToggleAll() {
+    handleToggleAll(){
         const newToggleAll = !this.state.todos.every(v => v.done);
-        const newTodos = this.state.todos.map(v => {
+        const newTodos = this.state.todos.map( v => {
             v.done = newToggleAll;
             return v;
         });
         this.setState({
-            todos: newTodos
+            todos : newTodos
         });
     }
-	
-    handleToggleTodo(id) {
-        const newTodos = [...this.state.todos];
+
+	handleToggleTodo(id){
+		const newTodos = [...this.state.todos];
         const editIndex = newTodos.findIndex(v => v.id === id);
         newTodos[editIndex].done = !newTodos[editIndex].done;
         this.setState({
-            todos: newTodos
+            todos : newTodos
         });
     }
-
+  
     render() {
         const {
             todos,
-            editing
-        } = this.state;
-        // routerParams.filter값을 filter에 할당
-		const filter = this.props.routeParams.filter;
-
-        const activeLength = todos.filter(v=> !v.done).length;
+            editing,
+        } = this.state
+		
+		// 라우트의 파람 값으로 필터 할당
+		const filter = this.props.routeParams.filter;	  
+        const activeLength = todos.filter(v => !v.done).length; 
         const completedLength = todos.length - activeLength;
-		//console.log(todos.filter(v=> v.done).length)
+		
         return (
             <div className="todo-app">
                 <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
                 <TodoList
                     todos={todos}
                     editing={editing}
-                    filter={filter}
+                    filter = {filter}
                     handleEditTodo = {id=> this.handleEditTodo(id)}
                     handleSaveTodo = {(id, newText)=> this.handleSaveTodo(id, newText)}
                     handleCancelEditTodo = {()=> this.handleCancelEditTodo()}
                     handleDeleteTodo = {id=> this.handleDeleteTodo(id)}
-                    handleToggleAll={()=> this.handleToggleAll()}
-                    handleToggleTodo={id=> this.handleToggleTodo(id)}
+                    handleToggleAll = {() => this.handleToggleAll()}
+                    handleToggleTodo = { id => this.handleToggleTodo(id)}
                 />
+				
                 <Footer
                     filter = {filter}
                     activeLength = {activeLength}
                     completedLength = {completedLength}
-                    handleSelectFilter = {filter=> this.handleSelectFilter(filter)}
-                    handleDeleteCompleted = {()=> this.handleDeleteCompleted()}
-					// todos배열에 필터 함수를 돌려 v.done 의 개수를 가져온다.
-                    completeLength = {todos.filter(v=> v.done).length}
+                    handleSelectFilter = {filter => this.handleSelectFilter(filter)}
+                    handleDeleteCompleted = {() => this.handleDeleteCompleted()}
+					// 완료개수 filter함수를 통해 done을 체크해서 개수를 파악함.
+					completeLength = {todos.filter(v => v.done).length}
                 />
             </div>
         );
