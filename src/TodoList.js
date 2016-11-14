@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Todo from './Todo';
 
+// 상속된 속성을 맵으로 돌림
 const TodoList = ({
     todos,
     editing,
@@ -31,9 +32,10 @@ const TodoList = ({
         );
     });
     return (
+		// toggle-all이 헤더에 가지 않은 이유 ? 어렵다고함...
         <div className="todo-app__main">
             <div 
-                className={"toggle-all${todos.every(v=> v.done) ? ' checked' : ''}"}
+                className={`toggle-all${todos.every(v=> v.done) ? ' checked' : ''}`}
                 onClick={handleToggleAll}
             />
             <ul className="todo-list">
