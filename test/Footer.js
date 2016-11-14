@@ -1,49 +1,50 @@
 import React from 'react';
+import { Link } from 'react-router';
+import ClassNames from 'classnames';
 
 const Footer = ({
     filter,
     activeLength,
     completedLength,
     handleSelectFilter,
-    handleDeleteCompleted    
+    handleDeleteCompleted
 }) => (
     <div className="footer">
         <span className="todo-count">
             <strong>{activeLength}</strong>{' '}
-            <span> {activeLength > 1 ? 'items' : 'item'}</span>
+            <span>{activeLength > 1 ? 'items' : 'item'}</span>
             {' '}left
         </span>
         <ul className="todo-filters">
             <li>
-                <a 
-                    onClick = { () => handleSelectFilter('All')}
-                    className = {filter === 'All' ? 'selected' : ''}
-                >
-                    전체
-                </a>
+				{}
+                <Link
+                    to="/"
+                    className={ClassNames({'selected': !filter})}
+                >All</Link>
             </li>
             <li>
-                <a
-                    onClick = {() => handleSelectFilter('Active')}
-                    className = {filter === 'Active' ? 'selected' : ''}
-                >
-                    할 목록
-                </a>
+				{}
+                <Link
+                    to="/active"
+                    className={ClassNames({'selected': filter === 'active'})}
+                >Active</Link>
             </li>
             <li>
-                <a 
-                    onClick = { () =>    handleSelectFilter('Completed')}
-                    className = {filter === 'Completed' ? 'selected' : ''}
-                >
-                    완료 목록
-                </a>
+			   {}
+                <Link
+                    to="/completed"
+                    className={ClassNames({'selected': filter === 'completed'})}
+                >Completed</Link>
             </li>
         </ul>
-        <button 
-            className={`todo-delete-completed${!completedLength ? ' hidden' : ''}`}
-            onClick = {handleDeleteCompleted}
+        <button
+            className={ClassNames('todo-delete-completed', {
+                hidden: !completedLength
+            })}
+            onClick={handleDeleteCompleted}
         >
-            완료된것 지워라
+            Delete Completed
         </button>
     </div>
 );

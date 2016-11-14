@@ -25,7 +25,6 @@ class Todo extends Component {
             onToggleTodo
         } = this.props;
         return (
-			// className 복수로 쓰기위한 문법 값이 done이면 completed 값이 editing이면 editing
             <li className={ClassNames('todo-item', {
                 editing: editing,
                 completed: done

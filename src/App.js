@@ -2,41 +2,95 @@ import React, { Component } from 'react';
 import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
+import axios from 'axios';
 
-const generateUId = ()=> Date.now();
+// axios모듈의 create함수를 씀 baseURL, timeout, respnseType 등이 속성ㅇ이 있음 서버연결하고 형태는 json
+const axiosApi = axios.create({
+    baseURL : 'http://localhost:2403/todos/',
+    timeout: 1000,
+    responseType: 'json'
+});
+
+// method, url, data, res, rej 등을 써서 요청과 응답을 promise로 처리함.
+const ax = ({
+    method = 'post',
+    url = '/',
+    data,
+    res,
+    rej = err => { console.error(err); }
+}) => {
+    if(data) return axiosApi[method](url, data).then(res).catch(rej);
+    return axiosApi[method](url).then(res).catch(rej);
+}
 
 class App extends Component {
     constructor() {
         super();
         this.state = {
-            todos: [
-                {id: 1000, text: '내생에'},
-                {id: 1001, text: '봄날은'},
-                {id: 1002, text: '간다'},
-                {id: 1003, text: '바람처럼'}
-            ],
+            todos: [],
             editing: null
         };
+	}
+	
+	// willMount 할때 data를서버에서 가져옴
+    componentWillMount() {
+        ax({
+            method: 'get',
+            res: ({data}) => {
+                this.setState({ todos: data });
+            }
+        });
     }
+
+	//post put delete, url : id매칭 res : res등이 반복된다.
     handleDeleteCompleted() {
-        const newTodos = this.state.todos.filter(v=> !v.done);
-        this.setState({ todos: newTodos });
+		// 이것의 상태 todos의 배열을 filter해서 v.done을 리턴하고 map함수로 ax를 콜백해서 method:delete ,url: todo.id값 
+        const axiosPromises = this.state.todos
+			.filter(v => v.done)
+			.map(todo => ax({
+				method: 'delete',
+				url: `/${todo.id}`
+			}));
+		const newTodos = this.state.todos.filter(v => !v.done);
+		
+		// axiosPromises 객체 받아서 응답이 오면 콜백으로 todos에 newTodos값을 쓴다.
+		axios.all(axiosPromises).then(res => {
+			this.setState({
+				todos: newTodos
+			})
+		})
+		// 응답이 없으면 에러를 뱉자.
+		.catch(err => {console.error(err)});
     }
 	
     handleAddTodo(text) {
-        this.setState({
+		// data : {text: text} 이고 응답을 닫으면 todos 현재상태의 todos에 응답받음 data를 추가한다. 
+        ax({
+			data: {text},
+			res: res => {
+				this.setState({
+					todos: [...this.state.todos, res.data]
+				});
+			}
+		});
+		this.setState({
             todos: [ ...this.state.todos, {
-                id: generateUId(),
                 text
             }]
         });
     }
 	
     handleDeleteTodo(id) {
-        const newTodos = [...this.state.todos];
-        const deleteIndex = newTodos.findIndex(v => v.id === id);
-        newTodos.splice(deleteIndex, 1);
-        this.setState({ todos: newTodos });
+		ax({
+			method: 'delete',
+			url: `${id}`,
+			res: res => {
+				const newTodos = [...this.state.todos];
+				const deleteIndex = newTodos.findeIndex(v => v.id === id);
+				newTodos.splice(deleteIndex, 1);
+				this.setState({todos: newTodos});
+			}
+		});
     }
 	
     handleEditTodo(id) {
@@ -46,13 +100,20 @@ class App extends Component {
     }
 	
     handleSaveTodo(id, newText) {
-        const newTodos = [...this.state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex].text = newText;
-        this.setState({
-            todos: newTodos,
-            editing: null
-        });
+		ax({
+			method: 'put',
+			url: `/${id}`,
+			data: {text: newText},
+			res: res => {
+				const newTodos = [...this.state.todos];
+				const editIndex = newTodos.findIndex( v => v.id === id);
+				newTodos[editIndex] = res.data;
+				this.setState({
+					todos: newTodos,
+					editing: null
+				});
+			}
+		});
     }
 	
     handleCancelEditTodo() {
@@ -63,35 +124,42 @@ class App extends Component {
 	
     handleToggleAll() {
         const newToggleAll = !this.state.todos.every(v => v.done);
-        const newTodos = this.state.todos.map(v => {
-            v.done = newToggleAll;
-            return v;
-        });
-        this.setState({
-            todos: newTodos
-        });
+        const axiosPromise = this.state.todos.map(v => ax({
+			method: 'put',
+			url : `${v.id}`,
+			data: {done: newToggleAll}
+        }));
+		axios.all(axiosPromise).then(res => {
+			this.setState({
+				todos: res.map(response => response.data)
+			});
+		});
     }
 	
     handleToggleTodo(id) {
-        const newTodos = [...this.state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex].done = !newTodos[editIndex].done;
-        this.setState({
-            todos: newTodos
-        });
-    }
+    	const isDone = this.state.todos.find(v => v.id === id).done;
+		ax({
+			method: 'put',
+			url: `${id}`,
+			data: {done: !isDone},
+			res: res => {
+				const newTodos = [...this.state.todos];
+				const editIndex = newTodos.findIndex(v => v.id === id);
+				newTodos.splice(editIndex, 1, res.data);
+				this.setState({todos: newTodos});
+			}
+		});
+	}
 
     render() {
         const {
             todos,
             editing
         } = this.state;
-        // routerParams.filter값을 filter에 할당
 		const filter = this.props.routeParams.filter;
 
         const activeLength = todos.filter(v=> !v.done).length;
         const completedLength = todos.length - activeLength;
-		//console.log(todos.filter(v=> v.done).length)
         return (
             <div className="todo-app">
                 <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
@@ -112,7 +180,6 @@ class App extends Component {
                     completedLength = {completedLength}
                     handleSelectFilter = {filter=> this.handleSelectFilter(filter)}
                     handleDeleteCompleted = {()=> this.handleDeleteCompleted()}
-					// todos배열에 필터 함수를 돌려 v.done 의 개수를 가져온다.
                     completeLength = {todos.filter(v=> v.done).length}
                 />
             </div>
