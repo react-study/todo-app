@@ -32,6 +32,7 @@
     "webpack-middleware": "^1.5.1"
   },
   "dependencies": {
-    "axios": "^0.15.2"
+    "axios": "^0.15.2",
+	"immutability-helper": "^2.0.0"
   }
 }

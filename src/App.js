@@ -3,6 +3,8 @@ import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
 import axios from 'axios';
+// 불변성 헬퍼 모듈중에 업데이트를 사용한다.
+import update from 'immutability-helper'
 
 const axiosApi = axios.create({
     baseURL : 'http://localhost:2403/todos/',
@@ -10,7 +12,6 @@ const axiosApi = axios.create({
     responseType: 'json'
 });
 
-// res= res 에서 함수를 리턴해야 하는 이유는 모르겠다. 어떤 값을 던지는것과 함수를 던지는것의 차이?
 const ax = ({
     method = 'post',
     url = '/',
@@ -22,8 +23,8 @@ const ax = ({
     return axiosApi[method](url).then(res).catch(rej);
 }
 
-
-// 낙관적 업데이트란 서버에서 송수신이 에러없이 일어날것이라고 가정하고 클라에서 업뎃하고 송 수신 때 에러가 발생할겨웅 이전 데이터로 돌린다.
+// 불변성 헬퍼를 쓰는 이유 깊은복사를 편하게 하기 위해서... 참조냐 새로운 객체의 값을 만들어낼수 있느냐!!
+// 주로 업데이트 요소에만 이 함수가 쓰이는것만 보아도 쓰이는 목적을 추론 할수 있음 이전 값과 새로운 값이 필요한 경우
 class App extends Component {
     constructor() {
         super();
@@ -41,15 +42,16 @@ class App extends Component {
         });
     }
 	
-	// 완료된것 지워라
     handleDeleteCompleted() {
-		// 클라 영역 이전 값을 prevTodos에 저장
         const prevTodos = this.state.todos;
-        this.setState({
-            todos: prevTodos.filter(v=> !v.done)
+		// update 함수 문법 {이전 data,  새로운 data의 깊은복사해서 바뀐 값을 전달 이전 값이 바뀌지 않음 편하다 ?}
+		const newTodos = update(prevTodos, {
+			$apply: todos => todos.filter(v=> !v.done)
+		});
+		this.setState({
+            todos: newTodos
         });
 		
-		// 서버와 통신을 하고 에러가 있을경우 이전 prevTodos를 저장함.
         const axiosPromises = prevTodos.filter(v => v.done)
         .map(todo => ax({
             method: 'delete',
@@ -63,9 +65,7 @@ class App extends Component {
         });
     }
 	
-	// 추가기능 함수
     handleAddTodo(text) {
-		// 추가의 경우에는 데이터에 추가해서 다시 get을 받게함. 그전 방식 그대로
         ax({
             data: { text },
             res: res => {
@@ -77,16 +77,15 @@ class App extends Component {
     }
 	
 	
-	// list 지우는 함수
     handleDeleteTodo(id) {
-		// 클라에서 이전값 저장및 바뀐값 써주고
         const prevTodos = this.state.todos;
         const deleteIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos.splice(deleteIndex, 1);
-        this.setState({ todos: newTodos });
+		// update : prevTodos 값을 저장하고 newTodos에 새로 생긴 값을 만드는 사본(진본?)을 만드는 일을 하는 함수
+		const newTodos = update(prevTodos, {
+			$splice: [[deleteIndex, 1]]
+		});
+		this.setState({todos: newTodos});
 		
-		// 서버와 통신후 에러 발생시 이전값으로 수정
         ax({
             method: 'delete',
             url: `/${id}`,
@@ -96,24 +95,26 @@ class App extends Component {
         });
     }
 	
-    // input 수정 창 들어가기
 	handleEditTodo(id) {
         this.setState({ editing: id });
     }
 	
-	// 수정 저장
     handleSaveTodo(id, newText) {
-		// 이전값 저장하고 새로운 데이터 클라에서처리
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos[editIndex].text = newText;
+		const newTodos = update(prevTodos, {
+			[editIndex]: {
+				text: {
+					$set: newText
+				}
+			}
+		})
         this.setState({
             todos: newTodos,
             editing: null
         });
-		// 서버에 데이터 업뎃하고 에러시 이전값으로 돌린다.
-        ax({
+
+		ax({
             method: 'put',
             url: `/${id}`,
             data: { text: newText },
@@ -125,22 +126,21 @@ class App extends Component {
         });
     }
 	
-	// 에디트 취소 인풋창 나오기
     handleCancelEditTodo() {
         this.setState({
             editing: null
         });
     }
 	
-	// 전체 토글하기
     handleToggleAll() {
-		// 배열 순회에서 모든 데이터에 done 체크 newTodos 작성한다.
         const prevTodos = this.state.todos;
         const newToggleAll = !prevTodos.every(v=> v.done);
-        const newTodos = prevTodos.map(todo => {
-            todo.done = newToggleAll;
-            return todo
-        });
+        const newTodos = update(prevTodos, {
+			$apply: todos => todos.map(todo =>{
+				todo.done = newToggleAll;
+				return todo;
+			})
+		});
 		
         this.setState({
             todos: newTodos
@@ -157,13 +157,16 @@ class App extends Component {
         });
     }
 	
-	// 리스트 하나씩 토글하기
     handleToggleTodo(id) {
-		// id로 체크해서 done 값을 true or false로 변경
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
-        newTodos[editIndex].done = !newTodos[editIndex].done;
+        const newTodos = update(prevTodos, {
+			[editIndex]: {
+				done: {
+					$set: !prevTodos[editIndex].done
+				}
+			}
+		});
         this.setState({ todos: newTodos });
 
         ax({
