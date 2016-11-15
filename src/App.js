@@ -4,25 +4,26 @@ import TodoList from './TodoList';
 import Footer from './Footer';
 import axios from 'axios';
 
-// axios모듈의 create함수를 씀 baseURL, timeout, respnseType 등이 속성ㅇ이 있음 서버연결하고 형태는 json
 const axiosApi = axios.create({
     baseURL : 'http://localhost:2403/todos/',
     timeout: 1000,
     responseType: 'json'
 });
 
-// method, url, data, res, rej 등을 써서 요청과 응답을 promise로 처리함.
+// res= res 에서 함수를 리턴해야 하는 이유는 모르겠다. 어떤 값을 던지는것과 함수를 던지는것의 차이?
 const ax = ({
     method = 'post',
     url = '/',
     data,
-    res,
+    res = () => {},
     rej = err => { console.error(err); }
 }) => {
     if(data) return axiosApi[method](url, data).then(res).catch(rej);
     return axiosApi[method](url).then(res).catch(rej);
 }
 
+
+// 낙관적 업데이트란 서버에서 송수신이 에러없이 일어날것이라고 가정하고 클라에서 업뎃하고 송 수신 때 에러가 발생할겨웅 이전 데이터로 돌린다.
 class App extends Component {
     constructor() {
         super();
@@ -30,9 +31,7 @@ class App extends Component {
             todos: [],
             editing: null
         };
-	}
-	
-	// willMount 할때 data를서버에서 가져옴
+    }
     componentWillMount() {
         ax({
             method: 'get',
@@ -41,125 +40,152 @@ class App extends Component {
             }
         });
     }
-
-	//post put delete, url : id매칭 res : res등이 반복된다.
+	
+	// 완료된것 지워라
     handleDeleteCompleted() {
-		// 이것의 상태 todos의 배열을 filter해서 v.done을 리턴하고 map함수로 ax를 콜백해서 method:delete ,url: todo.id값 
-        const axiosPromises = this.state.todos
-			.filter(v => v.done)
-			.map(todo => ax({
-				method: 'delete',
-				url: `/${todo.id}`
-			}));
-		const newTodos = this.state.todos.filter(v => !v.done);
-		
-		// axiosPromises 객체 받아서 응답이 오면 콜백으로 todos에 newTodos값을 쓴다.
-		axios.all(axiosPromises).then(res => {
-			this.setState({
-				todos: newTodos
-			})
-		})
-		// 응답이 없으면 에러를 뱉자.
-		.catch(err => {console.error(err)});
-    }
-	
-    handleAddTodo(text) {
-		// data : {text: text} 이고 응답을 닫으면 todos 현재상태의 todos에 응답받음 data를 추가한다. 
-        ax({
-			data: {text},
-			res: res => {
-				this.setState({
-					todos: [...this.state.todos, res.data]
-				});
-			}
-		});
-		this.setState({
-            todos: [ ...this.state.todos, {
-                text
-            }]
-        });
-    }
-	
-    handleDeleteTodo(id) {
-		ax({
-			method: 'delete',
-			url: `${id}`,
-			res: res => {
-				const newTodos = [...this.state.todos];
-				const deleteIndex = newTodos.findeIndex(v => v.id === id);
-				newTodos.splice(deleteIndex, 1);
-				this.setState({todos: newTodos});
-			}
-		});
-    }
-	
-    handleEditTodo(id) {
+		// 클라 영역 이전 값을 prevTodos에 저장
+        const prevTodos = this.state.todos;
         this.setState({
-            editing: id
+            todos: prevTodos.filter(v=> !v.done)
+        });
+		
+		// 서버와 통신을 하고 에러가 있을경우 이전 prevTodos를 저장함.
+        const axiosPromises = prevTodos.filter(v => v.done)
+        .map(todo => ax({
+            method: 'delete',
+            url: `/${todo.id}`
+        }));
+        axios.all(axiosPromises)
+        .catch(err => {
+            this.setState({
+                todos: prevTodos
+            });
         });
     }
 	
-    handleSaveTodo(id, newText) {
-		ax({
-			method: 'put',
-			url: `/${id}`,
-			data: {text: newText},
-			res: res => {
-				const newTodos = [...this.state.todos];
-				const editIndex = newTodos.findIndex( v => v.id === id);
-				newTodos[editIndex] = res.data;
-				this.setState({
-					todos: newTodos,
-					editing: null
-				});
-			}
-		});
+	// 추가기능 함수
+    handleAddTodo(text) {
+		// 추가의 경우에는 데이터에 추가해서 다시 get을 받게함. 그전 방식 그대로
+        ax({
+            data: { text },
+            res: res => {
+                this.setState({
+                    todos: [ ...this.state.todos, res.data ]
+                });
+            }
+        });
     }
 	
+	
+	// list 지우는 함수
+    handleDeleteTodo(id) {
+		// 클라에서 이전값 저장및 바뀐값 써주고
+        const prevTodos = this.state.todos;
+        const deleteIndex = prevTodos.findIndex(v=> v.id === id);
+        const newTodos = [...prevTodos];
+        newTodos.splice(deleteIndex, 1);
+        this.setState({ todos: newTodos });
+		
+		// 서버와 통신후 에러 발생시 이전값으로 수정
+        ax({
+            method: 'delete',
+            url: `/${id}`,
+            rej: err => {
+                this.setState({ todos: prevTodos });
+            }
+        });
+    }
+	
+    // input 수정 창 들어가기
+	handleEditTodo(id) {
+        this.setState({ editing: id });
+    }
+	
+	// 수정 저장
+    handleSaveTodo(id, newText) {
+		// 이전값 저장하고 새로운 데이터 클라에서처리
+        const prevTodos = this.state.todos;
+        const editIndex = prevTodos.findIndex(v=> v.id === id);
+        const newTodos = [...prevTodos];
+        newTodos[editIndex].text = newText;
+        this.setState({
+            todos: newTodos,
+            editing: null
+        });
+		// 서버에 데이터 업뎃하고 에러시 이전값으로 돌린다.
+        ax({
+            method: 'put',
+            url: `/${id}`,
+            data: { text: newText },
+            rej: err => {
+                this.setState({
+                    todos: prevTodos
+                });
+            }
+        });
+    }
+	
+	// 에디트 취소 인풋창 나오기
     handleCancelEditTodo() {
         this.setState({
             editing: null
         });
     }
 	
+	// 전체 토글하기
     handleToggleAll() {
-        const newToggleAll = !this.state.todos.every(v => v.done);
-        const axiosPromise = this.state.todos.map(v => ax({
-			method: 'put',
-			url : `${v.id}`,
-			data: {done: newToggleAll}
+		// 배열 순회에서 모든 데이터에 done 체크 newTodos 작성한다.
+        const prevTodos = this.state.todos;
+        const newToggleAll = !prevTodos.every(v=> v.done);
+        const newTodos = prevTodos.map(todo => {
+            todo.done = newToggleAll;
+            return todo
+        });
+		
+        this.setState({
+            todos: newTodos
+        });
+
+        const axiosPromise = newTodos.map(v => ax({
+            method: 'put',
+            url: `${v.id}`,
+            data: { done: newToggleAll }
         }));
-		axios.all(axiosPromise).then(res => {
-			this.setState({
-				todos: res.map(response => response.data)
-			});
-		});
+        axios.all(axiosPromise)
+        .catch(err => {
+            this.setState({ todos: prevTodos });
+        });
     }
 	
+	// 리스트 하나씩 토글하기
     handleToggleTodo(id) {
-    	const isDone = this.state.todos.find(v => v.id === id).done;
-		ax({
-			method: 'put',
-			url: `${id}`,
-			data: {done: !isDone},
-			res: res => {
-				const newTodos = [...this.state.todos];
-				const editIndex = newTodos.findIndex(v => v.id === id);
-				newTodos.splice(editIndex, 1, res.data);
-				this.setState({todos: newTodos});
-			}
-		});
-	}
+		// id로 체크해서 done 값을 true or false로 변경
+        const prevTodos = this.state.todos;
+        const editIndex = prevTodos.findIndex(v=> v.id === id);
+        const newTodos = [...prevTodos];
+        newTodos[editIndex].done = !newTodos[editIndex].done;
+        this.setState({ todos: newTodos });
+
+        ax({
+            method: 'put',
+            url: `/${id}`,
+            data: { done: newTodos[editIndex].done },
+            rej: err => {
+                this.setState({ todos: prevTodos });
+            }
+        });
+    }
 
     render() {
         const {
             todos,
             editing
         } = this.state;
-		const filter = this.props.routeParams.filter;
+        const filter = this.props.routeParams.filter;
 
         const activeLength = todos.filter(v=> !v.done).length;
         const completedLength = todos.length - activeLength;
+
         return (
             <div className="todo-app">
                 <Header handleAddTodo = {(text)=> this.handleAddTodo(text)} />
