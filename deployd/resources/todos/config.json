@@ -16,6 +16,14 @@
 			"required": false,
 			"id": "done",
 			"order": 1
+		},
+		"number": {
+			"name": "number",
+			"type": "number",
+			"typeLabel": "number",
+			"required": false,
+			"id": "number",
+			"order": 2
 		}
 	}
 }

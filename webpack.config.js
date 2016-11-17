@@ -11,6 +11,7 @@ module.exports = {
     PORT: PORT,
     URL: URL,
     watch: true,
+    debug: true,
     progress: true,
     devtool: 'cheap-module-eval-source-map',
     context: _PATH,
@@ -33,6 +34,11 @@ module.exports = {
                 include: [ _PATH ],
                 exclude: [ /node_modules/ ],
                 loader: 'react-hot!babel?cacheDirectory'
+            },
+
+            {
+                test: /\.css$/,
+                loader: 'style-loader!css-loader'
             }
         ]
     },
