@@ -67,7 +67,6 @@ input[type="checkbox"] {
 }
 
 .todo-app__header {
-  position: absolute;
   top: -139px;
   width: 100%;
   font-size: 100px;
@@ -148,7 +147,6 @@ label[for='toggle-all'] {
 .todo-item {
 	position: relative;
 	font-size: 24px;
-	padding-left: 45px;
 	border-bottom: 1px solid #ededed;
 }
 
@@ -375,4 +373,44 @@ html .clear-completed:active {
 	.todo-filters {
 		bottom: 10px;
 	}
+}
+.mybtn {
+	margin:0 5px;
+	cursor:pointer;
+}
+.headerList{
+	border-top: 1px dotted #ccc;
+	border-bottom: 1px dotted #ccc;
+	padding:5px 0;
+}
+.headerList li{
+	display: inline-block;
+	width: 100px;
+	text-align: center;
+}
+.MoneyList{
+	text-align: center;
+	padding: 0;
+}
+li{
+	list-style: none;
+}
+.list2{
+	padding: 10px 0;
+}
+.MoneyList .depth1 li{
+	display: inline-block;
+	width: 100px;
+	text-align: center;
+	list-style:none;
+}
+.text_C{text-align:center;}
+.newUl{
+	padding: 10px 0;
+	text-align: center;
+}
+.newUl li{
+	display: inline-block;
+	width: 100px;
+	text-align: center;
 }
