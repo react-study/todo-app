@@ -1,0 +1,12 @@
+li{
+    list-style: none;
+}
+.title__bar{
+    margin-top: 10px;
+}
+.title__bar span,
+.cashList span{
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+}
