@@ -12,17 +12,14 @@ export default class App extends Component {
   }
 
   transaction(mode, money) {
-    const change = +this.state.change + (mode === 'deposit' ? money : -money);
+    const change = this.state.change + (mode === 'deposit' ? money : -money);
     const list = {
       isDeposit: mode === 'deposit',
       money: money,
       change: change
     };
     const lists = [...this.state.lists, list];
-    this.setState({
-      change: change,
-      lists: lists
-    })
+    this.setState({change, lists});
   }
 
   render() {

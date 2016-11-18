@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 
 export default class Header extends Component {
   isNaturalNum(val) {
-    const isNaturalNum = 0 < val && val < Infinity;
+    const isInteger = (val === parseInt(val));
+    const isNaturalNum = isInteger && (0 < val && val < Infinity);
     if(!isNaturalNum) {
       this.money.focus();
       return alert('자연수만 입력해주세요.');
@@ -36,7 +37,7 @@ export default class Header extends Component {
       <header>
         <h1>통장</h1>
         <input type="text"
-               placeholder="숫자를 입력하세요"
+               placeholder="숫자s를 입력하세요"
                ref={ref => {
                  this.money = ref
                }} />

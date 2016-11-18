@@ -2,12 +2,11 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBrowserPlugin = require('webpack-browser-plugin');
-
-const HOST = 'http://localhost';
 const PATH = path.resolve(__dirname, 'src');
 
 module.exports = {
-  devtool: 'cheap-eval-source-map',
+  context: PATH,
+  devtool: 'cheap-e-eval-source-map',
   entry: [
     'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/dev-server',
@@ -20,8 +19,9 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.EvalSourceMapDevToolPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: 'index.html'
     }),
     new WebpackBrowserPlugin()
   ],
