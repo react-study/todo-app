@@ -11,9 +11,12 @@ class InputBox extends Component {
         this._input.value = '';
         this._input.focus();
     }
+    handleClick() {
+        this._input.focus();
+    }
     render() {
         return (
-            <div>
+            <div onClick={()=> this.handleClick()}>
                 <input ref={ref=> this._input = ref} type="text"/>
                 <button onClick={()=> this.handleSave()}>입금</button>
                 <button onClick={()=> this.handleWithdraw()}>춭금</button>

@@ -32,7 +32,7 @@ module.exports = {
                 test: /\.js$/,
                 include: [ _PATH ],
                 exclude: [ /node_modules/ ],
-                loader: 'react-hot!babel?cacheDirectory'
+                loader: 'babel?cacheDirectory'
             }
         ]
     },
