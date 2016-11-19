@@ -10,7 +10,8 @@ import * as tabActions from '../actions/tabActions';
 const mapStateToProps = state => { // state to props
     return {
         accountList: state.bank.accountList,
-        focused: state.tab.focused
+        focused: state.tab.focused,
+        effect: state.bank.effect
     }
 };
 
@@ -28,13 +29,13 @@ class App extends Component {
             accountList,
             save,
             withdraw,
-
+            effect,
             focused,
             changeTab
         } = this.props;
 
         return (
-            <div>
+            <div className={effect? 'effect' : ''}>
                 <Tabs focused={focused} changeTab={changeTab} />
                 <InputBox
                     save={money => save(money)}
