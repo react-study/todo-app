@@ -84,9 +84,9 @@ class App extends Component {
         this.setState({ editing: id });
     }
     handleSaveTodo(id, newText) {
-        const prevTodos = this.state.todos;
-        const editIndex = prevTodos.findIndex(v=> v.id === id);
-        const newTodos = [...prevTodos];
+        const newTodos = [...this.state.todos];
+        const editIndex = newTodos.findIndex(v=> v.id === id);
+        const originText = newTodos[editIndex].text;
         newTodos[editIndex].text = newText;
         this.setState({
             todos: newTodos,
@@ -97,8 +97,10 @@ class App extends Component {
             url: `/${id}`,
             data: { text: newText },
             rej: err => {
+                console.log(err);
+                newTodos[editIndex].text = originText;
                 this.setState({
-                    todos: prevTodos
+                    todos: newTodos
                 });
             }
         });
