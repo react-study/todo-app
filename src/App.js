@@ -44,10 +44,7 @@ class App extends Component {
         });
 
         const axiosPromises = prevTodos.filter(v => v.done)
-        .map(todo => ax({
-            method: 'delete',
-            url: `/${todo.id}`
-        }));
+        .map(todo => axios.delete(todo.id));
         axios.all(axiosPromises)
         .catch(err => {
             this.setState({
@@ -87,7 +84,7 @@ class App extends Component {
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
         const newTodos = [...prevTodos];
-        newTodos[editIndex].text = newText;
+        newTodos[editIndex] = Object.assign({}, newTodos[editIndex], {text: newText});
         this.setState({
             todos: newTodos,
             editing: null
@@ -96,11 +93,7 @@ class App extends Component {
             method: 'put',
             url: `/${id}`,
             data: { text: newText },
-            rej: err => {
-                this.setState({
-                    todos: prevTodos
-                });
-            }
+            rej: (err)=>{console.log(err)}
         });
     }
     handleCancelEditTodo() {
@@ -111,19 +104,14 @@ class App extends Component {
     handleToggleAll() {
         const prevTodos = this.state.todos;
         const newToggleAll = !prevTodos.every(v=> v.done);
-        const newTodos = prevTodos.map(todo => {
-            todo.done = newToggleAll;
-            return todo
-        });
+        const newTodos = prevTodos.map(todo =>
+            Object.assign({}, todo, {done: newToggleAll})
+        );
         this.setState({
             todos: newTodos
         });
 
-        const axiosPromise = newTodos.map(v => ax({
-            method: 'put',
-            url: `${v.id}`,
-            data: { done: newToggleAll }
-        }));
+        const axiosPromise = prevTodos.map(v => axiosApi.put(v.id, { done: newToggleAll }));
         axios.all(axiosPromise)
         .catch(err => {
             this.setState({ todos: prevTodos });
@@ -133,7 +121,7 @@ class App extends Component {
         const prevTodos = this.state.todos;
         const editIndex = prevTodos.findIndex(v=> v.id === id);
         const newTodos = [...prevTodos];
-        newTodos[editIndex].done = !newTodos[editIndex].done;
+        newTodos[editIndex] = Object.assign({}, newTodos[editIndex], {done: !newTodos[editIndex].done});
         this.setState({ todos: newTodos });
 
         ax({
