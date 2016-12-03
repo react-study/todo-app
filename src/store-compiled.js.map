@@ -1,0 +1,1 @@
+{"version":3,"sources":["store.js"],"names":[],"mappings":";;;;;;AAAA;;AACA;;;;;;AAEA,IAAM,QAAQ,8CAAd;;eAIe,K;;;;;;;;;kCAJT,K","file":"store-compiled.js","sourcesContent":["import { createStore } from 'redux';\nimport TodoReducer from './reducers/TodoReducer';\n\nconst store = createStore(\n    TodoReducer\n);\n\nexport default store;"]}

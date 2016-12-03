@@ -3,5 +3,8 @@
     "react",
     "es2015",
     "stage-1"
+  ],
+  "plugins": [
+    "react-hot-loader/babel"
   ]
 }
