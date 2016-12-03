@@ -10,7 +10,7 @@ const ax = ({
     method = 'post',
     url = '/',
     data,
-    res,
+    res = ()=> {},
     err = err => { console.error(err); }
 }) => {
     if(data) return axiosApi[method](url, data).then(res).catch(err);
@@ -19,7 +19,7 @@ const ax = ({
 
 const axall = ({
     arr,
-    res,
+    res = () => {},
     err = err => { console.error(err); }
 }) => axios.all(arr).then(res).catch(err);
 
@@ -38,7 +38,7 @@ const TodoActions = {
             data: { text },
             res: ({ data }) => dispatch({
                 type: 'ADD_TODO',
-                text: data
+                todo: data
             })
         });
     },
@@ -48,17 +48,24 @@ const TodoActions = {
             id
         }
     },
-    saveTodo(id, newText) {
-        return dispatch => ax({
-            method: 'put',
-            url: `/${id}`,
-            data: { text: newText },
-            res: res => dispatch({
+    saveTodo(id, prevText, newText) {
+        return dispatch => {
+            dispatch({
                 type: 'SAVE_TODO',
                 id,
-                newText
-            })
-        });
+                text: newText
+            });
+            return ax({
+                method: 'put',
+                url: `/${id}`,
+                data: { text: newText },
+                err: err => dispatch({
+                    type: 'SAVE_TODO_RESTORE',
+                    id,
+                    text: prevText
+                })
+            });
+        }
     },
     cancelEditTodo() {
         return {
@@ -69,7 +76,7 @@ const TodoActions = {
         return dispatch => ax({
             method: 'delete',
             url: `/${id}`,
-            res: ({ id }) => dispatch({
+            res: res => dispatch({
                 type: 'DELETE_TODO',
                 id
             })
@@ -78,46 +85,62 @@ const TodoActions = {
     toggleAll(todos) {
         return dispatch => {
             const newToggleAll = !todos.every(v => v.done);
+            const newTodos = todos.map(todo =>
+                Object.assign({}, todo, { done: newToggleAll })
+            );
+            dispatch({
+                type: 'TOGGLE_ALL',
+                todos: newTodos
+            });
+
             const axiosPromises = todos.map(todo =>
                 axiosApi.put(todo.id, { done: newToggleAll })
             );
             axall({
                 arr: axiosPromises,
-                res: res => {
-                    console.log(res);
-                    dispatch({
-                        type: 'TOGGLE_ALL',
-                        todos: res.map(v => v.data)
-                    })
-                }
+                err: err => dispatch({
+                    type: 'TOGGLE_ALL_RESTORE',
+                    todos
+                })
             });
         }
     },
     toggleTodo(id, newDone) {
         return dispatch => {
+            dispatch({
+                type: 'TOGGLE_TODO',
+                id,
+                done: newDone
+            });
+
             ax({
                 method: 'put',
                 url: `/${id}`,
                 data: { done: newDone },
-                res: res => {
-                    dispatch({
-                        type: 'TOGGLE_TODO',
-                        id,
-                        done: newDone
-                    })
-                }
+                err: err => dispatch({
+                    type: 'TOGGLE_TODO_RESTORE',
+                    id,
+                    done: !newDone
+                })
             });
         }
     },
     deleteCompleted(todos) {
         return dispatch => {
-            const axiosPormises = todos.filter(v => v.done).map(todo =>
+            const newTodos = todos.filter(v => !v.done);
+            dispatch({
+                type: 'DELETE_COMPLETED',
+                todos: newTodos
+            });
+
+            const axiosPromises = todos.filter(v => v.done).map(todo =>
                 axiosApi.delete(todo.id)
             );
             axall({
                 arr: axiosPromises,
-                res: res => dispatch({
-                    type: 'DELETE_COMPLETED'
+                err: err => dispatch({
+                    type: 'DELETE_COMPLETED_RESTORE',
+                    todos
                 })
             });
         }

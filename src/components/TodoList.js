@@ -21,12 +21,12 @@ const TodoList = ({
 
         return (
             <Todo
-                key              = {id}
+                key              = {`todo#${id}`}
                 text             = {text}
                 done             = {done}
                 editing          = {editing === id}
                 onEditTodo       = {()=> handleEditTodo(id)}
-                onSaveTodo       = {text=> handleSaveTodo(id, text)}
+                onSaveTodo       = {newText=> handleSaveTodo(id, text, newText)}
                 onCancelEditTodo = {()=> handleCancelEditTodo()}
                 onDeleteTodo     = {()=> handleDeleteTodo(id)}
                 onToggleTodo     = {()=> handleToggleTodo(id, !done)}

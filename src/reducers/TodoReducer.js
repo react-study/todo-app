@@ -1,6 +1,4 @@
-// TodoReducer.js
-
-const generateUId = ()=> Date.now();
+import update from 'immutability-helper';
 
 const initialState = {
     todos: [],
@@ -8,61 +6,90 @@ const initialState = {
 }
 
 const TodoReducerObj = {
-    'GET_TODOS': (state, { todos }) => ({
-        todos: todos,
-        editing: null
+    'GET_TODOS': (state, { todos }) => update(state, {
+        todos: { $set: todos }
     }),
-    'ADD_TODO': (state, { text }) => Object.assign({}, state, {
-        todos: [ ...state.todos, {
-            id: generateUId(),
-            text: text
-        }]
+    'ADD_TODO': (state, { todo }) => update(state, {
+        todos: {
+            $push: [todo]
+        }
     }),
-    'EDIT_TODO': (state, { id }) => Object.assign({}, state, {
-        editing: id
+    'EDIT_TODO': (state, { id }) => update(state, {
+        editing: {
+            $set: id
+        }
     }),
-    'SAVE_TODO': (state, { id, newText }) => {
-        const newTodos = [...state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex].text = newText;
-        return Object.assign({}, state, {
-            todos: newTodos,
-            editing: null
-        });
-    },
-    'CANCEL_EDIT_TODO': (state) => Object.assign({}, state, {
-        editing: null
+    'SAVE_TODO': (state, { id, text }) => update(state, {
+        todos: {
+            [state.todos.findIndex(v => v.id === id)]: {
+                text: {
+                    $set: text
+                }
+            }
+        },
+        editing: {
+            $set: null
+        }
     }),
-    'DELETE_TODO': (state, { id }) => {
-        const newTodos = [...state.todos];
-        const deleteIndex = newTodos.findIndex(v => v.id === id);
-        newTodos.splice(deleteIndex, 1);
-        return Object.assign({}, state, {
-            todos: newTodos
-        });
-    },
-    'TOGGLE_ALL': (state) => {
-        const newToggleAll = !state.todos.every(v => v.done);
-        const newTodos = state.todos.map(v=> {
-            v.done = newToggleAll;
-            return v;
-        });
-        return Object.assign({}, state, {
-            todos: newTodos
-        });
-    },
-    'TOGGLE_TODO': (state, { id, done }) => {
-        const newTodos = [...state.todos];
-        const editIndex = newTodos.findIndex(v => v.id === id);
-        newTodos[editIndex] = Object.assign({}, newTodos[editIndex], {
-            done
-        });
-        return Object.assign({}, state, {
-            todos: newTodos
-        });
-    },
-    'DELETE_COMPLETED': (state) => Object.assign({}, state, {
-        todos: state.todos.filter(v=> !v.done)
+    'SAVE_TODO_RESTORE': (state, { id, text }) => update(state, {
+        todos: {
+            [state.todos.findIndex(v => v.id === id)]: {
+                text: {
+                    $set: text
+                }
+            }
+        },
+        editing: {
+            $set: null
+        }
+    }),
+    'CANCEL_EDIT_TODO': (state) => update(state, {
+        editing: {
+            $set: null
+        }
+    }),
+    'DELETE_TODO': (state, { id }) => update(state, {
+        todos: {
+            $splice: [[state.todos.findIndex(v => v.id === id), 1]]
+        }
+    }),
+    'TOGGLE_TODO': (state, { id, done }) => update(state, {
+        todos: {
+            [state.todos.findIndex(v=> v.id === id)]: {
+                done: {
+                    $set: done
+                }
+            }
+        }
+    }),
+    'TOGGLE_TODO_RESTORE': (state, { id, done }) => update(state, {
+        todos: {
+            [state.todos.findIndex(v=> v.id === id)]: {
+                done: {
+                    $set: done
+                }
+            }
+        }
+    }),
+    'TOGGLE_ALL': (state, { todos }) => update(state, {
+        todos: {
+            $set: todos
+        }
+    }),
+    'TOGGLE_ALL_RESTORE': (state, { todos }) => update(state, {
+        todos: {
+            $set: todos
+        }
+    }),
+    'DELETE_COMPLETED': (state, { todos }) => update(state, {
+        todos: {
+            $set: todos
+        }
+    }),
+    'DELETE_COMPLETED_RESTORE': (state, { todos }) => update(state, {
+        todos: {
+            $set: todos
+        }
     })
 }
 

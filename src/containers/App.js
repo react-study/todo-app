@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => ({
     getTodos              : ()=> dispatch(TodoActions.getTodos()),
     handleAddTodo         : text => dispatch(TodoActions.addTodo(text)),
     handleEditTodo        : id => dispatch(TodoActions.editTodo(id)),
-    handleSaveTodo        : (id, newText) => dispatch(TodoActions.saveTodo(id, newText)),
+    handleSaveTodo        : (id, prevText, newText) => dispatch(TodoActions.saveTodo(id, prevText, newText)),
     handleCancelEditTodo  : ()=> dispatch(TodoActions.cancelEditTodo()),
     handleDeleteTodo      : id => dispatch(TodoActions.deleteTodo(id)),
     handleToggleAll       : todos => dispatch(TodoActions.toggleAll(todos)),
@@ -33,7 +33,6 @@ class App extends Component {
             todos,
             editing,
             routeParams: {filter},
-
             handleAddTodo,
             handleEditTodo,
             handleSaveTodo,
