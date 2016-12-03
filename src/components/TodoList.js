@@ -29,7 +29,7 @@ const TodoList = ({
                 onSaveTodo       = {text=> handleSaveTodo(id, text)}
                 onCancelEditTodo = {()=> handleCancelEditTodo()}
                 onDeleteTodo     = {()=> handleDeleteTodo(id)}
-                onToggleTodo     = {()=> handleToggleTodo(id)}
+                onToggleTodo     = {()=> handleToggleTodo(id, !done)}
             />
         );
     });
@@ -39,7 +39,7 @@ const TodoList = ({
                 className={ClassNames('toggle-all', {
                     checked: todos.every(v=> v.done)
                 })}
-                onClick={handleToggleAll}
+                onClick={()=> handleToggleAll(todos)}
             />
             <ul className="todo-list">
                 {todoList}

@@ -18,9 +18,9 @@ const mapDispatchToProps = dispatch => ({
     handleSaveTodo        : (id, newText) => dispatch(TodoActions.saveTodo(id, newText)),
     handleCancelEditTodo  : ()=> dispatch(TodoActions.cancelEditTodo()),
     handleDeleteTodo      : id => dispatch(TodoActions.deleteTodo(id)),
-    handleToggleAll       : ()=> dispatch(TodoActions.toggleAll()),
-    handleToggleTodo      : id => dispatch(TodoActions.toggleTodo(id)),
-    handleDeleteCompleted : ()=> dispatch(TodoActions.deleteCompleted())
+    handleToggleAll       : todos => dispatch(TodoActions.toggleAll(todos)),
+    handleToggleTodo      : (id, newDone) => dispatch(TodoActions.toggleTodo(id, newDone)),
+    handleDeleteCompleted : todos => dispatch(TodoActions.deleteCompleted(todos))
 });
 
 class App extends Component {
@@ -43,29 +43,28 @@ class App extends Component {
             handleToggleTodo,
             handleDeleteCompleted
         } = this.props;
-
         const activeLength = todos.filter(v=> !v.done).length;
         const completedLength = todos.length - activeLength;
 
         return (
             <div className="todo-app">
-                <Header handleAddTodo = {(text)=> handleAddTodo(text)} />
+                <Header handleAddTodo = {handleAddTodo} />
                 <TodoList
                     todos={todos}
                     editing={editing}
                     filter={filter}
-                    handleEditTodo = {id=> handleEditTodo(id)}
-                    handleSaveTodo = {(id, newText)=> handleSaveTodo(id, newText)}
-                    handleCancelEditTodo = {()=> handleCancelEditTodo()}
-                    handleDeleteTodo = {id=> handleDeleteTodo(id)}
-                    handleToggleAll={()=> handleToggleAll()}
-                    handleToggleTodo={id=> handleToggleTodo(id)}
+                    handleEditTodo = {handleEditTodo}
+                    handleSaveTodo = {handleSaveTodo}
+                    handleCancelEditTodo = {handleCancelEditTodo}
+                    handleDeleteTodo = {handleDeleteTodo}
+                    handleToggleAll={handleToggleAll}
+                    handleToggleTodo={handleToggleTodo}
                 />
                 <Footer
                     filter = {filter}
                     activeLength = {activeLength}
                     completedLength = {completedLength}
-                    handleDeleteCompleted = {()=> handleDeleteCompleted()}
+                    handleDeleteCompleted = {()=>handleDeleteCompleted(todos)}
                 />
             </div>
         );
