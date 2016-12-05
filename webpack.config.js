@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const WebpackBrowserPlugin = require('webpack-browser-plugin');
+var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const HOST  = 'http://localhost';
 const PORT  = 8080;
@@ -25,8 +25,7 @@ module.exports = {
   },
   output: {
     path: _PATH,
-    filename: 'bundle.js',
-    publicPath: URL
+    filename: 'bundle.js'
   },
   module: {
     loaders: [
@@ -49,6 +48,10 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
-    new webpack.EvalSourceMapDevToolPlugin()
+    new webpack.EvalSourceMapDevToolPlugin(),
+    new WebpackBrowserPlugin({
+      url: HOST,
+      port: PORT
+    })
   ]
 };

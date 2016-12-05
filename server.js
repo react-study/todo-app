@@ -1,11 +1,11 @@
-var express = require('express');
-var webpack = require('webpack');
-var path = require('path');
-var config = require('./webpack.config.js');
+const express = require('express');
+const webpack = require('webpack');
+const path = require('path');
+const config = require('./webpack.config.js');
 
-var compiler = webpack(config);
+const compiler = webpack(config);
 
-var serverOptions = {
+const serverOptions = {
   contentBase: config.URL,
   progress: true,
   hot: true,
@@ -27,7 +27,7 @@ var serverOptions = {
   }
 };
 
-var app = new express();
+const app = new express();
 app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
 app.use(express.static(config.context));
