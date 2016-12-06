@@ -14,10 +14,10 @@ const ajax = ({
   url = '/',
   data = null,
   res = null,
-  rej = err => console.error(err)
-}) => rej ?
+  rej = null
+}) => res ?
     axiosApi[method](url, data).then(res).catch(rej) :
-    axiosApi[method](url, data).then(res);
+    axiosApi[method](url, data).catch(rej);
 
 export default class App extends Component {
   /*
@@ -56,13 +56,24 @@ export default class App extends Component {
 
   // Array.splice() 대신에 [...Array]로 얕은 복사가 가능.
   addTodo(newTodo) {
+    const originTodos = [...this.state.todos];
+    this.setState({
+      todos: [...this.state.todos, {text: newTodo, done: false}]
+    });
     ajax({
       data: {
         text: newTodo
       },
-      res: ({data}) => this.setState({
-        todos: [...this.state.todos, data]
-      })
+      res: ({data: {id}}) => {
+        const newTodos = [...this.state.todos];
+        const lenNewTodos = newTodos.length;
+        newTodos[lenNewTodos-1] = Object.assign({}, newTodos[lenNewTodos-1], {id: id});
+        this.setState({todos: newTodos});
+      },
+      rej: err => {
+        console.error(err);
+        this.setState({todos: originTodos})
+      }
     });
   }
 
@@ -71,23 +82,26 @@ export default class App extends Component {
    * db에서 id를 키값으로 접근하기 때문.
    */
   deleteTodo(id) {
+    const originTodos = [...this.state.todos];
+    const newTodos = [...this.state.todos];
+    /*
+     const idx = newTodos.findIndex((v) => {
+     // newTodos[i].id === id 라고 보면 됨.
+     return v.id === id
+     // 위 조건을 만족하는 배열의 인덱스를 반환.
+     // find 메소드였다는 배열의 요소(여기선 객체)를 반환.
+     });
+     */
+    const idx = newTodos.findIndex(v => v.id === id);
+    // 인덱스 idx로부터 1개를 짜른 배열을 반환. (앞 뒤 합쳐서)
+    newTodos.splice(idx, 1);
+    this.setState({todos: newTodos});
     ajax({
       method: 'delete',
       url: `/${id}`,
-      res: () => {
-        const newTodos = [...this.state.todos];
-        /*
-         const idx = newTodos.findIndex((v) => {
-         // newTodos[i].id === id 라고 보면 됨.
-         return v.id === id
-         // 위 조건을 만족하는 배열의 인덱스를 반환.
-         // find 메소드였다는 배열의 요소(여기선 객체)를 반환.
-         });
-         */
-        const idx = newTodos.findIndex(v => v.id === id);
-        // 인덱스 idx로부터 1개를 짜른 배열을 반환. (앞 뒤 합쳐서)
-        newTodos.splice(idx, 1);
-        this.setState({todos: newTodos});
+      rej: err => {
+        console.error(err);
+        this.setState({todos: originTodos});
       }
     });
   }
@@ -102,33 +116,40 @@ export default class App extends Component {
 
   // 자식 컴포넌트로부터 id와 수정된 텍스트를 가지고 있는 객체를 매개변수로 받음.
   updateTodo(text) {
+    const originTodos = [...this.state.todos];
+    const newTodos = [...this.state.todos];
+    const idx = newTodos.findIndex(v => v.id === this.state.editId);
+    // 자식 컴포넌트와 일치하는 id를 찾아서 수정된 텍스트로 스테이트 대체.
+    newTodos[idx] = Object.assign({}, newTodos[idx], {text: text});
+    this.setState({todos: newTodos, editId: null});
     ajax({
       url: `/${this.state.editId}`,
       data: {text},
-      res: () => {
-        const newTodos = [...this.state.todos];
-        const idx = newTodos.findIndex(v => v.id === this.state.editId);
-        // 자식 컴포넌트와 일치하는 id를 찾아서 수정된 텍스트로 스테이트 대체.
-        newTodos[idx] = Object.assign({}, newTodos[idx], {text: text});
-        this.setState({todos: newTodos, editId: null});
+      rej: err => {
+        console.error(err);
+        this.setState({todos: originTodos});
       }
     });
   }
 
   toggleTodo(id) {
+    const originTodos = [...this.state.todos];
     const newTodos = [...this.state.todos];
     const idx = newTodos.findIndex(v => v.id === id);
     newTodos[idx] = Object.assign({}, newTodos[idx], {done: !newTodos[idx].done});
+    this.setState({todos: newTodos});
     ajax({
       url: `/${id}`,
       data: {done: newTodos[idx].done},
-      res: () => {
-        this.setState({todos: newTodos});
+      rej: err => {
+        console.error(err);
+        this.setState({todos: originTodos});
       }
     });
   }
 
   toggleAll() {
+    const originTodos = [...this.state.todos];
     // 모두 체크 됐는지 아닌지 알아냄.
     const isCheckedAll = this.state.todos.every(v => v.done);
     // 모두 체크되지 않은 경우에는 모두 완료로
@@ -137,26 +158,32 @@ export default class App extends Component {
     const newTodos = this.state.todos.map(v =>
       Object.assign({}, v, {done: !isCheckedAll})
     );
+    this.setState({todos: newTodos});
     const promises = this.state.todos.map(({id}) => ajax({
       url: `/${id}`,
-      data: {done: !isCheckedAll},
-      rej: null
+      data: {done: !isCheckedAll}
     }));
-    axios.all(promises).then(() => this.setState({todos: newTodos}))
-      .catch(err => console.error(err));
+    axios.all(promises).catch(err => {
+      console.error(err);
+      this.setState({todos: originTodos});
+    });
   }
 
   deleteDone() {
+    const originTodos = [...this.state.todos];
+    const newTodos = this.state.todos.filter(v => !v.done);
+    this.setState({todos: newTodos});
+
     // 미완료된 애들만 필터링해서 새로운 배열로 만듦.
     const promises = this.state.todos.filter(v => v.done)
       .map(({id}) => ajax({
         method: 'delete',
-        url: `/${id}`,
-        rej: null
+        url: `/${id}`
       }));
-    const newTodos = this.state.todos.filter(v => !v.done);
-    axios.all(promises).then(() => this.setState({todos: newTodos}))
-      .catch(err => console.error(err));
+    axios.all(promises).catch(err => {
+      console.error(err);
+      this.setState({todos: originTodos});
+    });
   }
 
   render() {
