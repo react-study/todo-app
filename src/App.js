@@ -87,18 +87,10 @@ export default class App extends Component {
    */
   deleteTodo(id) {
     const originTodos = [...this.state.todos];
-    const newTodos = [...originTodos];
-    /*
-     const idx = newTodos.findIndex((v) => {
-     // newTodos[i].id === id 라고 보면 됨.
-     return v.id === id
-     // 위 조건을 만족하는 배열의 인덱스를 반환.
-     // find 메소드였다는 배열의 요소(여기선 객체)를 반환.
-     });
-     */
-    const idx = newTodos.findIndex(v => v.id === id);
-    // 인덱스 idx로부터 1개를 짜른 배열을 반환. (앞 뒤 합쳐서)
-    newTodos.splice(idx, 1);
+    const idx = originTodos.findIndex(v => v.id === id);
+    this.setState({todos: update(originTodos, {$splice:
+      [[idx, 1]]
+    })});
     ajax({
       method: 'delete',
       url: `/${id}`,
@@ -117,16 +109,16 @@ export default class App extends Component {
     this.setState({editId: null});
   }
 
+
   // 자식 컴포넌트로부터 id와 수정된 텍스트를 가지고 있는 객체를 매개변수로 받음.
   updateTodo(text) {
     const originTodos = this.state.todos;
     const idx = originTodos.findIndex(v => v.id === this.state.editId);
-    const newTodos = update(originTodos, {[idx]: {
+    this.setState({todos: update(originTodos, {[idx]: {
       text: {
         $set: text
       }
-    }});
-    this.setState({todos: newTodos, editId: null});
+    }}), editId: null});
     ajax({
       url: `/${this.state.editId}`,
       data: {text},
@@ -140,15 +132,14 @@ export default class App extends Component {
   toggleTodo(id) {
     const originTodos = this.state.todos;
     const idx = originTodos.findIndex(v => v.id === id);
-    const newTodos = update(originTodos, {[idx]: {
+    this.setState({todos: update(originTodos, {[idx]: {
       done: {
         $set: !originTodos[idx].done
       }
-    }});
-    this.setState({todos: newTodos});
+    }})});
     ajax({
       url: `/${id}`,
-      data: {done: newTodos[idx].done},
+      data: {done: !originTodos[idx].done},
       rej: err => {
         console.error(err);
         this.setState({todos: originTodos});
@@ -163,15 +154,14 @@ export default class App extends Component {
     // 모두 체크되지 않은 경우에는 모두 완료로
     // 모두 체크된 경우에는 모두 미완료로 변경해야함.
     // 상반되는 동작을 수행해야함.
-    const newTodos = originTodos.map(v =>
+    this.setState({todos: originTodos.map(v =>
       update(v, {
         done: {
           $set: !isCheckedAll
         }
       })
-    );
-    this.setState({todos: newTodos});
-    const promises = newTodos.map(({id}) => ajax({
+    )});
+    const promises = originTodos.map(({id}) => ajax({
       url: `/${id}`,
       data: {done: !isCheckedAll}
     }));
@@ -183,11 +173,10 @@ export default class App extends Component {
 
   deleteDone() {
     const originTodos = [...this.state.todos];
-    const newTodos = originTodos.filter(v => !v.done);
-    this.setState({todos: newTodos});
+    this.setState({todos: originTodos.filter(v => !v.done)});
 
     // 미완료된 애들만 필터링해서 새로운 배열로 만듦.
-    const promises = this.state.todos.filter(v => v.done)
+    const promises = originTodos.filter(v => v.done)
       .map(({id}) => ajax({
         method: 'delete',
         url: `/${id}`
