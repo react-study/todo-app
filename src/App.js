@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import axios from  'axios';
+import update from 'immutability-helper';
 import Header from './Header';
 import TodoList from './TodoList';
 import Footer from './Footer';
@@ -56,18 +57,21 @@ export default class App extends Component {
 
   // Array.splice() 대신에 [...Array]로 얕은 복사가 가능.
   addTodo(newTodo) {
-    const originTodos = [...this.state.todos];
+    const originTodos = this.state.todos;
     this.setState({
-      todos: [...this.state.todos, {text: newTodo, done: false}]
+      todos: [...originTodos, {text: newTodo, done: false}]
     });
     ajax({
       data: {
         text: newTodo
       },
       res: ({data: {id}}) => {
-        const newTodos = [...this.state.todos];
-        const lenNewTodos = newTodos.length;
-        newTodos[lenNewTodos-1] = Object.assign({}, newTodos[lenNewTodos-1], {id: id});
+        const lastIdxNewTodos = this.state.todos.length-1;
+        const newTodos = update(this.state.todos, {[lastIdxNewTodos]: {
+          id: {
+            $set: id
+          }
+        }});
         this.setState({todos: newTodos});
       },
       rej: err => {
@@ -83,7 +87,7 @@ export default class App extends Component {
    */
   deleteTodo(id) {
     const originTodos = [...this.state.todos];
-    const newTodos = [...this.state.todos];
+    const newTodos = [...originTodos];
     /*
      const idx = newTodos.findIndex((v) => {
      // newTodos[i].id === id 라고 보면 됨.
@@ -95,7 +99,6 @@ export default class App extends Component {
     const idx = newTodos.findIndex(v => v.id === id);
     // 인덱스 idx로부터 1개를 짜른 배열을 반환. (앞 뒤 합쳐서)
     newTodos.splice(idx, 1);
-    this.setState({todos: newTodos});
     ajax({
       method: 'delete',
       url: `/${id}`,
@@ -116,11 +119,13 @@ export default class App extends Component {
 
   // 자식 컴포넌트로부터 id와 수정된 텍스트를 가지고 있는 객체를 매개변수로 받음.
   updateTodo(text) {
-    const originTodos = [...this.state.todos];
-    const newTodos = [...this.state.todos];
-    const idx = newTodos.findIndex(v => v.id === this.state.editId);
-    // 자식 컴포넌트와 일치하는 id를 찾아서 수정된 텍스트로 스테이트 대체.
-    newTodos[idx] = Object.assign({}, newTodos[idx], {text: text});
+    const originTodos = this.state.todos;
+    const idx = originTodos.findIndex(v => v.id === this.state.editId);
+    const newTodos = update(originTodos, {[idx]: {
+      text: {
+        $set: text
+      }
+    }});
     this.setState({todos: newTodos, editId: null});
     ajax({
       url: `/${this.state.editId}`,
@@ -133,10 +138,13 @@ export default class App extends Component {
   }
 
   toggleTodo(id) {
-    const originTodos = [...this.state.todos];
-    const newTodos = [...this.state.todos];
-    const idx = newTodos.findIndex(v => v.id === id);
-    newTodos[idx] = Object.assign({}, newTodos[idx], {done: !newTodos[idx].done});
+    const originTodos = this.state.todos;
+    const idx = originTodos.findIndex(v => v.id === id);
+    const newTodos = update(originTodos, {[idx]: {
+      done: {
+        $set: !originTodos[idx].done
+      }
+    }});
     this.setState({todos: newTodos});
     ajax({
       url: `/${id}`,
@@ -149,17 +157,21 @@ export default class App extends Component {
   }
 
   toggleAll() {
-    const originTodos = [...this.state.todos];
+    const originTodos = this.state.todos;
     // 모두 체크 됐는지 아닌지 알아냄.
-    const isCheckedAll = this.state.todos.every(v => v.done);
+    const isCheckedAll = originTodos.every(v => v.done);
     // 모두 체크되지 않은 경우에는 모두 완료로
     // 모두 체크된 경우에는 모두 미완료로 변경해야함.
     // 상반되는 동작을 수행해야함.
-    const newTodos = this.state.todos.map(v =>
-      Object.assign({}, v, {done: !isCheckedAll})
+    const newTodos = originTodos.map(v =>
+      update(v, {
+        done: {
+          $set: !isCheckedAll
+        }
+      })
     );
     this.setState({todos: newTodos});
-    const promises = this.state.todos.map(({id}) => ajax({
+    const promises = newTodos.map(({id}) => ajax({
       url: `/${id}`,
       data: {done: !isCheckedAll}
     }));
@@ -171,7 +183,7 @@ export default class App extends Component {
 
   deleteDone() {
     const originTodos = [...this.state.todos];
-    const newTodos = this.state.todos.filter(v => !v.done);
+    const newTodos = originTodos.filter(v => !v.done);
     this.setState({todos: newTodos});
 
     // 미완료된 애들만 필터링해서 새로운 배열로 만듦.
