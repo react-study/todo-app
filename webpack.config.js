@@ -1,12 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
 const WebpackBrowserPlugin = require('webpack-browser-plugin');
-var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const HOST  = 'http://localhost';
 const PORT  = 8080;
 const URL   = HOST + ':' + PORT + '/';
-const _PATH = path.resolve(__dirname, 'src');
+const PATH = path.resolve(__dirname, 'src');
 
 module.exports = {
   HOST: HOST,
@@ -15,23 +14,24 @@ module.exports = {
   watch: true,
   progress: true,
   devtool: 'cheap-module-eval-source-map',
-  context: _PATH,
+  context: PATH,
   entry: {
     index: [
       'webpack-hot-middleware/client?path=' + URL + '__webpack_hmr',
       'webpack/hot/only-dev-server',
-      path.resolve(_PATH, 'main'),
+      path.resolve(PATH, 'main'),
     ]
   },
   output: {
-    path: _PATH,
-    filename: 'bundle.js'
+    path: PATH,
+    filename: 'bundle.js',
+    publicPath: URL
   },
   module: {
     loaders: [
       {
         test: /\.js$/,
-        include: [ _PATH ],
+        include: [ PATH ],
         exclude: [ /node_modules/ ],
         loader: 'react-hot!babel?cacheDirectory'
       }, {
@@ -41,7 +41,7 @@ module.exports = {
     ]
   },
   resolve: {
-    root: [ _PATH ],
+    root: [ PATH ],
     extensions: [ '', '.js' ]
   },
   node: { fs: "empty" },
